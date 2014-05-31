@@ -64,7 +64,7 @@ public class ModelTable {
 		case 10:
 			ClientProxy.barrel.render();
 			break;
-			
+
 		default :
 			cross.render(0.0625f);
 			break;

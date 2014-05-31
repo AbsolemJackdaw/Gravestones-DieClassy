@@ -31,7 +31,7 @@ public class TileEntityGrave extends TileEntity implements IInventory
 
 	/**slots in the container shown*/
 	public ItemStack[] slots = new ItemStack[40];
-	
+
 	/**current tab displayed*/
 	public int tab = 0;
 
@@ -81,10 +81,10 @@ public class TileEntityGrave extends TileEntity implements IInventory
 	public void setInventorySlotContents(int slot, ItemStack par2ItemStack)
 	{
 		int slotID = tab == 0 ? slot : tab == 1 ? slot + 40 : slot + 47;
-		
+
 		this.slots[slot] = par2ItemStack;
 		this.list[slotID] = par2ItemStack;
-		
+
 		if ((par2ItemStack != null) && (par2ItemStack.stackSize > this.getInventoryStackLimit())) {
 			par2ItemStack.stackSize = this.getInventoryStackLimit();
 		}
@@ -94,7 +94,7 @@ public class TileEntityGrave extends TileEntity implements IInventory
 	public ItemStack decrStackSize(int slot, int ammount)
 	{
 		int slotID = tab == 0 ? slot : tab == 1 ? slot + 40 : slot + 47;
-		
+
 		if (this.slots[slot] != null)
 		{
 			ItemStack itemstack;
@@ -126,16 +126,16 @@ public class TileEntityGrave extends TileEntity implements IInventory
 	@Override
 	public ItemStack getStackInSlotOnClosing(int par1)
 	{
-//		if (this.slots[par1] != null)
-//		{
-//			ItemStack itemstack = this.slots[par1];
-//			this.slots[par1] = null;
-//			return itemstack;
-//		}
-//		else
-//		{
-			return null;
-//		}
+		//		if (this.slots[par1] != null)
+		//		{
+		//			ItemStack itemstack = this.slots[par1];
+		//			this.slots[par1] = null;
+		//			return itemstack;
+		//		}
+		//		else
+		//		{
+		return null;
+		//		}
 	}
 
 	@Override
@@ -297,8 +297,8 @@ public class TileEntityGrave extends TileEntity implements IInventory
 	public void updateEntity() {
 		super.updateEntity();
 
-		for(int i =0; i < list.length; i++){
-			if(list[i] != null){
+		for (ItemStack element : list) {
+			if(element != null){
 				//if al stacks are null, hasItems = false;
 				hasItems = true;
 				break;
@@ -371,7 +371,7 @@ public class TileEntityGrave extends TileEntity implements IInventory
 
 			break;
 
-		case RPGI: 
+		case RPGI:
 			for(int i = 0; i < 7; i ++){
 				slots[i] = list[i+40];
 			}

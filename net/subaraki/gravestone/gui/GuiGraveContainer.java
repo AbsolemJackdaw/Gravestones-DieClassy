@@ -10,7 +10,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
@@ -123,7 +122,7 @@ public class GuiGraveContainer extends GuiContainer{
 			fontRendererObj.drawSplitString(te.locked, (this.width / 2)+80, (this.height / 2)+40, 150 ,0xffffff);
 		}
 
-		fontRendererObj.drawString(tabText, this.width/2-xSize/2 + 5, this.height/2-ySize/2 + 5, 0xffffff);
+		fontRendererObj.drawString(tabText, ((this.width/2)-(xSize/2)) + 5, ((this.height/2)-(ySize/2)) + 5, 0xffffff);
 
 		int render = te.modelType;
 
@@ -141,8 +140,9 @@ public class GuiGraveContainer extends GuiContainer{
 			scale = 60f;
 		}
 
-		if(render == 8)
+		if(render == 8) {
 			scale = 50f;
+		}
 
 		GL11.glTranslatef((this.width / 2) - 150, (this.height / 2) - height, 40);
 		GL11.glScaled(scale, scale, -scale);
@@ -161,17 +161,18 @@ public class GuiGraveContainer extends GuiContainer{
 			GL11.glRotatef(-10, 1f, 0f, 0f);
 			GL11.glTranslatef(-s2, 0f, s2);
 		}
-		
+
 		GL11.glRotatef(5, 1f, 0f, 0f);
 		GL11.glRotatef(rotationCounter++, 0, 1, 0);
 
-		if(render == 8)
+		if(render == 8) {
 			GL11.glTranslatef(s, 0, -s);
+		}
 
 		if(render == 10){
 			GL11.glTranslatef(s2, 0, -s2);
 		}
-		
+
 		ModelTable.renderModelFromType(render);
 		GL11.glPopMatrix();
 
@@ -218,14 +219,15 @@ public class GuiGraveContainer extends GuiContainer{
 
 		this.buttonList.clear();
 		int i = 0;
-		buttonList.add(new GuiButton(0, this.width/2 - xSize/2      , 8, 40 , 20, "MC"));
+		int x = ((this.width/2) - (xSize/2)) + 4;
+		buttonList.add(new GuiTabButton(0, x     , 8, 40 , 20, "MC"));
 		i += 40;
 		if(GraveStones.hasRpgI){
-			buttonList.add(new GuiButton(1, this.width/2 - xSize/2 + i , 8, 40 , 20, "RpgI"));
+			buttonList.add(new GuiTabButton(1, x + i , 8, 40 , 20, "RpgI"));
 			i+= 40;
 		}
 		if(GraveStones.hasTC){
-			buttonList.add(new GuiButton(2, this.width/2 - xSize/2 + i , 8, 40 , 20, "TC"));
+			buttonList.add(new GuiTabButton(2, x + i , 8, 40 , 20, "TC"));
 		}
 	}
 

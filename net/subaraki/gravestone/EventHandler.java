@@ -3,8 +3,6 @@ package net.subaraki.gravestone;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import rpgInventory.gui.rpginv.PlayerRpgInventory;
-
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -67,7 +65,7 @@ public class EventHandler {
 
 		PlayerData.get(evt.original).loadNBTData(tag);
 	}
-	
+
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onDeathEvent(LivingDeathEvent evt){
 
@@ -75,8 +73,9 @@ public class EventHandler {
 			EntityPlayer player = (EntityPlayer)evt.entityLiving;
 
 			//dont place a grave when they should keep the contents
-			if (player.worldObj.getGameRules().getGameRuleBooleanValue("keepInventory"))
+			if (player.worldObj.getGameRules().getGameRuleBooleanValue("keepInventory")) {
 				return;
+			}
 
 			int x = MathHelper.floor_double(player.posX),
 					y = MathHelper.floor_double(player.posY),
@@ -185,9 +184,9 @@ public class EventHandler {
 				}
 			}catch (Exception e) {
 				FMLLog.getLogger().info("Error Encountered trying to acces RpgInventory Inventory Content. Please report to mod author");
-			} 
+			}
 		}
-		
+
 		if(GraveStones.hasTC){
 			try {
 				Class<?> clazz = Class.forName("tconstruct.util.player.TPlayerStats");
@@ -205,7 +204,7 @@ public class EventHandler {
 			} catch (Exception e) {
 				FMLLog.getLogger().info("Error Encountered trying to acces Tinkers Construct Inventory Content. Please report to mod author");
 			}
-			
+
 			try {
 				Class<?> clazz = Class.forName("tconstruct.util.player.TPlayerStats");
 				Method m = clazz.getDeclaredMethod("get", EntityPlayer.class);

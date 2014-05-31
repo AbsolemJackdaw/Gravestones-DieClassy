@@ -2,7 +2,6 @@ package net.subaraki.gravestone;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.item.ItemStack;
 import net.subaraki.gravestone.block.BlockGrave;
 import net.subaraki.gravestone.block.inventory.TileEntityGrave;
 import net.subaraki.gravestone.proxy.ServerProxy;
@@ -30,7 +29,7 @@ public class GraveStones {
 
 	public static boolean hasTC = false;
 	public static boolean hasRpgI = false;
-	
+
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		instance = this;
@@ -48,8 +47,8 @@ public class GraveStones {
 		proxy.registerRendering();
 		new net.subaraki.gravestone.EventHandler();
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
-		
-		
+
+
 		try {
 			Class classRpgI = Class.forName("rpgInventory.RpgInventoryMod");
 
@@ -68,7 +67,7 @@ public class GraveStones {
 				FMLLog.getLogger().info("GraveStones Detected Tinkers Construct. Inventory Content will be dumped into grave");
 				hasTC = true;
 			}
-			
+
 		} catch (Exception e){
 		}
 	}

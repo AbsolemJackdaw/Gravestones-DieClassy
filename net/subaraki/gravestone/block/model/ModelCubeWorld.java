@@ -108,8 +108,8 @@ public class ModelCubeWorld extends ModelBase {
 					final int z = it1d / area;
 
 					final int it2d = it1d - (area * z); // Exploiting the lack
-														// of rounding in
-														// integer values
+					// of rounding in
+					// integer values
 					final int x = it2d % modelData.length;
 					final int y = it2d / modelData.length;
 

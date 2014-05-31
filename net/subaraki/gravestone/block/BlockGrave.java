@@ -37,7 +37,7 @@ public class BlockGrave extends Block{
 	public int quantityDropped(Random par1Random){
 		return -1;
 	}
-	
+
 	@Override
 	public boolean onBlockActivated(World world, int x,
 			int y, int z, EntityPlayer player,
@@ -46,10 +46,11 @@ public class BlockGrave extends Block{
 
 		TileEntityGrave te = (TileEntityGrave) world.getTileEntity(x, y, z);
 
-		if(!player.isSneaking())
+		if(!player.isSneaking()) {
 			player.openGui(GraveStones.instance, 0, world, x, y, z);
-		else
+		} else {
 			te.ModelRotation += 11.5f;
+		}
 
 		return true;
 	}
@@ -75,10 +76,11 @@ public class BlockGrave extends Block{
 	public void onBlockClicked(World world, int x,
 			int y, int z, EntityPlayer player) {
 
-		if(((TileEntityGrave)world.getTileEntity(x, y, z)).hasItems)
+		if(((TileEntityGrave)world.getTileEntity(x, y, z)).hasItems) {
 			setBlockUnbreakable();
-		else
+		} else {
 			setHardness(5.0f);
+		}
 
 		System.out.println(blockHardness);
 	}
@@ -91,15 +93,14 @@ public class BlockGrave extends Block{
 
 		if (te != null)
 		{
-			for (int j1 = 0; j1 < te.list.length; ++j1)
-			{
-				ItemStack itemstack = te.list[j1];
+			for (ItemStack element : te.list) {
+				ItemStack itemstack = element;
 
 				if (itemstack != null)
 				{
-					float f = this.rand.nextFloat() * 0.8F + 0.1F;
-					float f1 = this.rand.nextFloat() * 0.8F + 0.1F;
-					float f2 = this.rand.nextFloat() * 0.8F + 0.1F;
+					float f = (this.rand.nextFloat() * 0.8F) + 0.1F;
+					float f1 = (this.rand.nextFloat() * 0.8F) + 0.1F;
+					float f2 = (this.rand.nextFloat() * 0.8F) + 0.1F;
 
 					while (itemstack.stackSize > 0)
 					{
@@ -111,7 +112,7 @@ public class BlockGrave extends Block{
 						}
 
 						itemstack.stackSize -= k1;
-						EntityItem entityitem = new EntityItem(world, (double)((float)x + f), (double)((float)y + f1), (double)((float)z + f2), new ItemStack(itemstack.getItem(), k1, itemstack.getItemDamage()));
+						EntityItem entityitem = new EntityItem(world, x + f, y + f1, z + f2, new ItemStack(itemstack.getItem(), k1, itemstack.getItemDamage()));
 
 						if (itemstack.hasTagCompound())
 						{
@@ -119,11 +120,12 @@ public class BlockGrave extends Block{
 						}
 
 						float f3 = 0.05F;
-						entityitem.motionX = (double)((float)this.rand.nextGaussian() * f3);
-						entityitem.motionY = (double)((float)this.rand.nextGaussian() * f3 + 0.2F);
-						entityitem.motionZ = (double)((float)this.rand.nextGaussian() * f3);
-						if(!world.isRemote)
+						entityitem.motionX = (float)this.rand.nextGaussian() * f3;
+						entityitem.motionY = ((float)this.rand.nextGaussian() * f3) + 0.2F;
+						entityitem.motionZ = (float)this.rand.nextGaussian() * f3;
+						if(!world.isRemote) {
 							world.spawnEntityInWorld(entityitem);
+						}
 					}
 				}
 			}

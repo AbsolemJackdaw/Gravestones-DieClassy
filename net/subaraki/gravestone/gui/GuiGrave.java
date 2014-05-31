@@ -86,9 +86,10 @@ public class GuiGrave extends GuiScreen{
 		if((render == 9)){
 			scale = 60f;
 		}
-		
-		if(render == 8)
+
+		if(render == 8) {
 			scale = 50f;
+		}
 
 		GL11.glTranslatef((this.width / 2) - 150, (this.height / 2) - height, 40);
 		GL11.glScaled(scale, scale, -scale);
@@ -103,9 +104,9 @@ public class GuiGrave extends GuiScreen{
 			GL11.glTranslatef(-s, 0f, s);
 
 		}
-		
+
 		if(render == 10){
-			
+
 			GL11.glScalef(1, -1, 1);
 			GL11.glTranslatef(-0.5f, -1.5f, 0f);
 			GL11.glRotatef(-10, 1f, 0f, 0f);
@@ -116,9 +117,10 @@ public class GuiGrave extends GuiScreen{
 		GL11.glRotatef(5, 1f, 0f, 0f);
 		GL11.glRotatef(rotationCounter++, 0, 1, 0);
 
-		if(render == 8)
+		if(render == 8) {
 			GL11.glTranslatef(s, 0, -s);
-		
+		}
+
 		if(render == 10){
 			GL11.glTranslatef(s2, 0, -s2);
 		}

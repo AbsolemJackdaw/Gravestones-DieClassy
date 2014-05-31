@@ -34,6 +34,9 @@ public class StringTable {
 		String knight1 = StatCollector.translateToLocal("grave.knight.1");
 		String knight2 = StatCollector.translateToLocal("grave.knight.2");
 
+		String barrel1 = StatCollector.translateToLocal("grave.barrel.1");
+		String barrel2 = StatCollector.translateToLocal("grave.barrel.2");
+
 		if(meta == 1) {
 			return rest1 + nameOfDeathPlayer + rest2;
 		} else if(meta == 2) {
@@ -52,6 +55,8 @@ public class StringTable {
 			return angle1 + nameOfDeathPlayer + angle2 ;
 		} else if(meta == 9) {
 			return knight1 + nameOfDeathPlayer+ knight2 ;
+		}else if(meta == 10) {
+			return barrel1 + nameOfDeathPlayer+ barrel2 ;
 		}
 
 		return "error encountered. index out of bounds : " + meta;

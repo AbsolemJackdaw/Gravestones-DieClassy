@@ -32,7 +32,7 @@ public class ClientProxy extends ServerProxy {
 		barrel = new ModelCubeWorld( ModelCubeWorld.class.getResourceAsStream("/assets/gravestone/models/barrel.cub"));
 
 	}
-	
+
 
 	@Override
 	public void setCustomNameBoolean(TileEntityGrave te, boolean b) {

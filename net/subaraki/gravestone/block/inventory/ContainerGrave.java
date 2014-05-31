@@ -137,8 +137,6 @@ public class ContainerGrave extends Container{
 
 		Slot slot= (Slot)inventorySlots.get(slotID);
 
-		int listSlot = te.tab == 0 ? slotID : te.tab == 1 ? slotID + 40 : slotID + 47; 
-		
 		if((slot != null) && slot.getHasStack()){
 			ItemStack slotStack = slot.getStack();
 			stack = slotStack.copy();
@@ -148,7 +146,7 @@ public class ContainerGrave extends Container{
 					if(!this.mergeItemStack(stack, 40, 76, true)){
 						return null;
 					}
-					
+
 				}else{
 					if(slotID == 36) {
 						if(!this.mergeItemStack(stack, 76, 77, true)) {
@@ -189,5 +187,5 @@ public class ContainerGrave extends Container{
 		}
 		return stack;
 	}
-	
+
 }
