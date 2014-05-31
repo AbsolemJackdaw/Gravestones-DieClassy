@@ -1,8 +1,16 @@
 package net.subaraki.gravestone.gui;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufOutputStream;
+import io.netty.buffer.Unpooled;
+
+import java.io.IOException;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
@@ -12,6 +20,7 @@ import net.subaraki.gravestone.StringTable;
 import net.subaraki.gravestone.TextureTable;
 import net.subaraki.gravestone.block.inventory.ContainerGrave;
 import net.subaraki.gravestone.block.inventory.TileEntityGrave;
+import net.subaraki.gravestone.block.inventory.TileEntityGrave.EnumGrave;
 import net.subaraki.gravestone.block.model.ModelAngel;
 import net.subaraki.gravestone.block.model.ModelGraveSkeleton;
 import net.subaraki.gravestone.block.model.ModelGraveStone;
@@ -21,8 +30,11 @@ import net.subaraki.gravestone.block.model.ModelPillar;
 import net.subaraki.gravestone.block.model.ModelStoneCross;
 import net.subaraki.gravestone.block.model.ModelTomb;
 import net.subaraki.gravestone.block.model.ModelWoodenGrave;
+import net.subaraki.gravestone.packets.ServerPacket;
 
 import org.lwjgl.opengl.GL11;
+
+import cpw.mods.fml.common.network.internal.FMLProxyPacket;
 
 public class GuiGraveContainer extends GuiContainer{
 
@@ -38,6 +50,7 @@ public class GuiGraveContainer extends GuiContainer{
 
 	private TileEntityGrave te;
 
+	private String tabText = "MineCraft";
 
 	public static final ModelAngel angel = new ModelAngel();
 	public static final ModelGraveSkeleton skeleton = new ModelGraveSkeleton();
@@ -51,7 +64,6 @@ public class GuiGraveContainer extends GuiContainer{
 	private static final ResourceLocation graveGui = new ResourceLocation("subaraki:grave/grave_chest.png");
 
 	private ModelHead modelhead = new ModelHead();
-
 
 	public GuiGraveContainer(EntityPlayer player, TileEntityGrave grave ) {
 		super(new ContainerGrave(player.inventory, grave, player));
@@ -111,6 +123,8 @@ public class GuiGraveContainer extends GuiContainer{
 			fontRendererObj.drawSplitString(te.locked, (this.width / 2)+80, (this.height / 2)+40, 150 ,0xffffff);
 		}
 
+		fontRendererObj.drawString(tabText, this.width/2-xSize/2 + 5, this.height/2-ySize/2 + 5, 0xffffff);
+
 		int render = te.modelType;
 
 		GL11.glPushMatrix();
@@ -123,15 +137,30 @@ public class GuiGraveContainer extends GuiContainer{
 			height = 40;
 		}
 
-		if((render == 8)|| (render == 9)){
+		if((render == 9)){
 			scale = 60f;
 		}
+
+		if(render == 8)
+			scale = 50f;
 
 		GL11.glTranslatef((this.width / 2) - 150, (this.height / 2) - height, 40);
 		GL11.glScaled(scale, scale, -scale);
 
+		float s = -0.65f;
+		if(render == 8){
+
+			GL11.glScalef(1, -1, 1);
+			GL11.glTranslatef(-0.5f, -2.4f, 0f);
+			GL11.glTranslatef(-s, 0f, s);
+
+		}
+
 		GL11.glRotatef(5, 1f, 0f, 0f);
 		GL11.glRotatef(rotationCounter++, 0, 1, 0);
+
+		if(render == 8)
+			GL11.glTranslatef(s, 0, -s);
 
 		ModelTable.renderModelFromType(render);
 		GL11.glPopMatrix();
@@ -170,5 +199,79 @@ public class GuiGraveContainer extends GuiContainer{
 		}
 		GL11.glPopMatrix();
 
+	}
+
+
+	@Override
+	public void initGui() {
+		super.initGui();
+
+		this.buttonList.clear();
+		int i = 0;
+		buttonList.add(new GuiButton(0, this.width/2 - xSize/2      , 8, 40 , 20, "MC"));
+		i += 40;
+		if(GraveStones.hasRpgI){
+			buttonList.add(new GuiButton(1, this.width/2 - xSize/2 + i , 8, 40 , 20, "RpgI"));
+			i+= 40;
+		}
+		if(GraveStones.hasTC){
+			buttonList.add(new GuiButton(2, this.width/2 - xSize/2 + i , 8, 40 , 20, "TC"));
+		}
+	}
+
+	@Override
+	protected void actionPerformed(GuiButton button) {
+		super.actionPerformed(button);
+
+		if(button.id == 0){
+			updateInventory(0);
+			tabText = "MineCraft";
+		}
+
+		if(button.id == 1){
+			updateInventory(1);
+			tabText = "Rpg Inventory";
+		}
+
+		if(button.id == 2){
+			updateInventory(2);
+			tabText = "Tinkers Construct";
+		}
+	}
+
+	private void updateInventory(int i){
+
+		ByteBuf buf = Unpooled.buffer();
+		ByteBufOutputStream out = new ByteBufOutputStream(buf);
+
+		try {
+
+			out.writeInt(ServerPacket.CHANGE_GRAVE);
+			out.writeInt(te.xCoord);
+			out.writeInt(te.yCoord);
+			out.writeInt(te.zCoord);
+			out.writeInt(i);
+
+			GraveStones.channel.sendToServer(new FMLProxyPacket(buf,"gravestone"));
+
+			out.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		switch(i){
+		case 0:
+			te.changeGrave(EnumGrave.VANILLA);
+			break;
+		case 1:
+			te.changeGrave(EnumGrave.RPGI);
+			break;
+		case 2:
+			te.changeGrave(EnumGrave.TC);
+			break;
+		}
+
+		te.tab = i;
 	}
 }

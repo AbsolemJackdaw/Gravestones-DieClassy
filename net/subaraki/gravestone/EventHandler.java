@@ -1,18 +1,27 @@
 package net.subaraki.gravestone;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+import rpgInventory.gui.rpginv.PlayerRpgInventory;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent.Clone;
 import net.subaraki.gravestone.block.inventory.TileEntityGrave;
 import net.subaraki.gravestone.proxy.ClientProxy;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -51,10 +60,23 @@ public class EventHandler {
 	}
 
 	@SubscribeEvent
+	public void onClone(Clone evt){
+		NBTTagCompound tag = new NBTTagCompound();
+
+		PlayerData.get(evt.entityPlayer).saveNBTData(tag);
+
+		PlayerData.get(evt.original).loadNBTData(tag);
+	}
+	
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onDeathEvent(LivingDeathEvent evt){
 
 		if(evt.entityLiving instanceof EntityPlayer){
 			EntityPlayer player = (EntityPlayer)evt.entityLiving;
+
+			//dont place a grave when they should keep the contents
+			if (player.worldObj.getGameRules().getGameRuleBooleanValue("keepInventory"))
+				return;
 
 			int x = MathHelper.floor_double(player.posX),
 					y = MathHelper.floor_double(player.posY),
@@ -109,8 +131,8 @@ public class EventHandler {
 				te.modelType = PlayerData.get(player).getGraveModel();
 
 				player.worldObj.setTileEntity(x, y, z, te);
+				player.worldObj.markBlockForUpdate(x, y, z);
 			}
-
 		}
 	}
 
@@ -125,19 +147,81 @@ public class EventHandler {
 		te.setGraveData(player.getCommandSenderName(), PlayerData.get(player).getGraveModel());
 
 
-		for(int id = 0; id <inv.getSizeInventory(); id++)
+		for(int slot = 0; slot <inv.getSizeInventory(); slot++)
 		{
-			ItemStack is = inv.getStackInSlot(id);
-			if((is != null) && (id < te.getSizeInventory()))
+			ItemStack is = inv.getStackInSlot(slot);
+			if((is != null) && (slot < te.getSizeInventory()))
 			{
-				te.setInventorySlotContents(id, is);
-				inv.setInventorySlotContents(id, null);
+				te.tab = 0;
+				te.setInventorySlotContents(slot, is);
+				inv.setInventorySlotContents(slot, null);
+
+				addOtherInventory(te, player);
 			}
 		}
 
 		player.worldObj.setTileEntity(x, y+1, z, te);
 		player.worldObj.markBlockForUpdate(x, y+1, z);
 		te.markDirty();
+	}
 
+
+	private void addOtherInventory(TileEntityGrave te, EntityPlayer p){
+
+		if(GraveStones.hasRpgI){
+			try {
+
+				Class<?> clazz = Class.forName("rpgInventory.gui.rpginv.PlayerRpgInventory");
+				Method m = clazz.getDeclaredMethod("get", EntityPlayer.class);
+				Object result = m.invoke(null, p);
+
+				IInventory inv = (IInventory)result;
+
+				FMLLog.getLogger().info("Dumping all Rpg Inventory content into grave");
+
+				for(int i = 0; i < 7; i ++){
+					ItemStack is = inv.getStackInSlot(i);
+					te.list[i + 40] = is;
+				}
+			}catch (Exception e) {
+				FMLLog.getLogger().info("Error Encountered trying to acces RpgInventory Inventory Content. Please report to mod author");
+			} 
+		}
+		
+		if(GraveStones.hasTC){
+			try {
+				Class<?> clazz = Class.forName("tconstruct.util.player.TPlayerStats");
+				Method m = clazz.getDeclaredMethod("get", EntityPlayer.class);
+				Object result = m.invoke(null, p);
+				Field f = clazz.getDeclaredField("knapsack");
+				IInventory sack = (IInventory)f.get(result);
+
+				FMLLog.getLogger().info("Dumping all Tinkers Contruct Knapsack into grave");
+
+				for(int i = 0; i < 27; i ++){
+					ItemStack is = sack.getStackInSlot(i);
+					te.list[i + 47] = is;
+				}
+			} catch (Exception e) {
+				FMLLog.getLogger().info("Error Encountered trying to acces Tinkers Construct Inventory Content. Please report to mod author");
+			}
+			
+			try {
+				Class<?> clazz = Class.forName("tconstruct.util.player.TPlayerStats");
+				Method m = clazz.getDeclaredMethod("get", EntityPlayer.class);
+				Object result = m.invoke(null, p);
+				Field f = clazz.getDeclaredField("armor");
+				IInventory sack = (IInventory)f.get(result);
+
+				FMLLog.getLogger().info("Dumping all Tinkers Contruct Armor into grave");
+
+				for(int i = 0; i < 4; i ++){
+					ItemStack is = sack.getStackInSlot(i);
+					te.list[i + 74] = is;
+				}
+			} catch (Exception e) {
+				FMLLog.getLogger().info("Error Encountered trying to acces Tinkers Construct Inventory Content. Please report to mod author");
+			}
+		}
 	}
 }

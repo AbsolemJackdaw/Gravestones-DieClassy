@@ -2,7 +2,6 @@ package net.subaraki.gravestone.block.inventory;
 
 import java.util.Random;
 
-import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,16 +15,30 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 
 public class TileEntityGrave extends TileEntity implements IInventory
 {
 
+	/**all saved itemstacks
+	 *
+	 * 0-39  are vanilla
+	 * 40-46 is rpg invententory
+	 * 47-73 is tconstruct knapsack
+	 * 74-77 is tconstruct armor
+	 * */
+	public ItemStack[] list = new ItemStack[128];
+
+	/**slots in the container shown*/
 	public ItemStack[] slots = new ItemStack[40];
+	
+	/**current tab displayed*/
+	public int tab = 0;
 
 	/**playername saved to nbt. used to reconstruct the stubplayer*/
 	public String playername = "";
 
-	public int modelType =0;
+	public int modelType = 0;
 
 	public float ModelRotation = 0;
 
@@ -65,10 +78,13 @@ public class TileEntityGrave extends TileEntity implements IInventory
 	}
 
 	@Override
-	public void setInventorySlotContents(int par1, ItemStack par2ItemStack)
+	public void setInventorySlotContents(int slot, ItemStack par2ItemStack)
 	{
-		this.slots[par1] = par2ItemStack;
-
+		int slotID = tab == 0 ? slot : tab == 1 ? slot + 40 : slot + 47;
+		
+		this.slots[slot] = par2ItemStack;
+		this.list[slotID] = par2ItemStack;
+		
 		if ((par2ItemStack != null) && (par2ItemStack.stackSize > this.getInventoryStackLimit())) {
 			par2ItemStack.stackSize = this.getInventoryStackLimit();
 		}
@@ -77,6 +93,8 @@ public class TileEntityGrave extends TileEntity implements IInventory
 	@Override
 	public ItemStack decrStackSize(int slot, int ammount)
 	{
+		int slotID = tab == 0 ? slot : tab == 1 ? slot + 40 : slot + 47;
+		
 		if (this.slots[slot] != null)
 		{
 			ItemStack itemstack;
@@ -85,6 +103,7 @@ public class TileEntityGrave extends TileEntity implements IInventory
 			{
 				itemstack = this.slots[slot];
 				this.slots[slot] = null;
+				this.list[slotID] = null;
 				return itemstack;
 			}
 			else
@@ -94,30 +113,29 @@ public class TileEntityGrave extends TileEntity implements IInventory
 				if (this.slots[slot].stackSize == 0)
 				{
 					this.slots[slot] = null;
+					this.list[slotID] = null;
 				}
 
 				return itemstack;
 			}
 		}
-		else
-		{
-			return null;
-		}
+
+		return null;
 	}
 
 	@Override
 	public ItemStack getStackInSlotOnClosing(int par1)
 	{
-		if (this.slots[par1] != null)
-		{
-			ItemStack itemstack = this.slots[par1];
-			this.slots[par1] = null;
-			return itemstack;
-		}
-		else
-		{
+//		if (this.slots[par1] != null)
+//		{
+//			ItemStack itemstack = this.slots[par1];
+//			this.slots[par1] = null;
+//			return itemstack;
+//		}
+//		else
+//		{
 			return null;
-		}
+//		}
 	}
 
 	@Override
@@ -161,14 +179,21 @@ public class TileEntityGrave extends TileEntity implements IInventory
 
 		otherPlayerHasTakenItemStack = nbt.getBoolean("isLooted");
 
-		//		this.inv = new ItemStack[this.getSizeInventory()];
-
-		NBTTagList tagList = nbt.getTagList("Items", 10);
+		NBTTagList tagList = nbt.getTagList("Items", Constants.NBT.TAG_COMPOUND);
 		for (int i = 0; i < tagList.tagCount(); i++) {
 			NBTTagCompound tag = tagList.getCompoundTagAt(i);
 			byte slot = tag.getByte("Slot");
 			if ((slot >= 0) && (slot < slots.length)) {
 				slots[slot] = ItemStack.loadItemStackFromNBT(tag);
+			}
+		}
+
+		NBTTagList tagList2 = nbt.getTagList("ListItems", Constants.NBT.TAG_COMPOUND);
+		for (int i = 0; i < tagList2.tagCount(); i++) {
+			NBTTagCompound tag = tagList2.getCompoundTagAt(i);
+			byte slot = tag.getByte("ListSlot");
+			if ((slot >= 0) && (slot < list.length)) {
+				list[slot] = ItemStack.loadItemStackFromNBT(tag);
 			}
 		}
 	}
@@ -198,12 +223,27 @@ public class TileEntityGrave extends TileEntity implements IInventory
 			}
 		}
 		par1NBTTagCompound.setTag("Items", nbttaglist);
+
+
+		NBTTagList nbttaglist2 = new NBTTagList();
+
+		for (int i = 0; i < this.list.length; ++i)
+		{
+			if (this.list[i] != null)
+			{
+				NBTTagCompound nbttagcompound1 = new NBTTagCompound();
+				nbttagcompound1.setByte("ListSlot", (byte)i);
+				list[i].writeToNBT(nbttagcompound1);
+				nbttaglist2.appendTag(nbttagcompound1);
+			}
+		}
+		par1NBTTagCompound.setTag("ListItems", nbttaglist2);
 	}
 
 	public void dropContents(World world, int x, int y, int z) {
 
 		if (this != null) {
-			for (int slotIndex = 0; slotIndex < this.getSizeInventory(); slotIndex++) {
+			for (int slotIndex = 0; slotIndex < this.list.length; slotIndex++) {
 				ItemStack items = this.getStackInSlot(slotIndex);
 
 				if (items != null) {
@@ -233,18 +273,6 @@ public class TileEntityGrave extends TileEntity implements IInventory
 		}
 	}
 
-	public void setItems(ItemStack[] items)
-	{
-		if (items != null)
-		{
-			for (int i = 0; i < items.length; i++)
-			{
-				setInventorySlotContents(i, items[i]);
-			}
-		}
-	}
-
-
 	public String setName(String name)
 	{
 		playername = name;
@@ -269,16 +297,15 @@ public class TileEntityGrave extends TileEntity implements IInventory
 	public void updateEntity() {
 		super.updateEntity();
 
-		for(int i =0; i < getSizeInventory(); i++){
-			if(getStackInSlot(i) != null){
+		for(int i =0; i < list.length; i++){
+			if(list[i] != null){
 				//if al stacks are null, hasItems = false;
 				hasItems = true;
-				return;
+				break;
 			}else{
 				hasItems = false;
 			}
 		}
-
 	}
 
 	@Override
@@ -328,4 +355,49 @@ public class TileEntityGrave extends TileEntity implements IInventory
 		this.readFromNBT(pkt.func_148857_g());
 	}
 
+
+	public void changeGrave(EnumGrave num){
+
+		for(int i = 0; i < slots.length; i ++){
+			slots[i] = null;
+		}
+
+		switch(num){
+		case VANILLA:
+
+			for(int i = 0; i < slots.length; i ++){
+				slots[i] = list[i];
+			}
+
+			break;
+
+		case RPGI: 
+			for(int i = 0; i < 7; i ++){
+				slots[i] = list[i+40];
+			}
+
+			break;
+
+		case TC:
+			for(int i = 0; i < 27; i ++){
+				slots[i] = list[i+47];
+			}
+			for(int i = 0; i < 4; i ++){
+				slots[i] = list[i+74];
+			}
+			break;
+
+		default:
+			break;
+
+		}
+
+		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+	}
+
+	public enum EnumGrave{
+		VANILLA,
+		RPGI,
+		TC
+	}
 }

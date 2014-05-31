@@ -34,12 +34,9 @@ public class BlockGrave extends Block{
 	}
 
 	@Override
-	public int quantityDropped(Random par1Random)
-	{
+	public int quantityDropped(Random par1Random){
 		return -1;
 	}
-
-	
 	
 	@Override
 	public boolean onBlockActivated(World world, int x,
@@ -94,9 +91,9 @@ public class BlockGrave extends Block{
 
 		if (te != null)
 		{
-			for (int j1 = 0; j1 < te.getSizeInventory(); ++j1)
+			for (int j1 = 0; j1 < te.list.length; ++j1)
 			{
-				ItemStack itemstack = te.getStackInSlot(j1);
+				ItemStack itemstack = te.list[j1];
 
 				if (itemstack != null)
 				{
