@@ -17,6 +17,7 @@ public class ClientProxy extends ServerProxy {
 			"Grave Gui", Keyboard.KEY_M, "gravestonemod");
 
 	public static ModelCubeWorld angelStatue;
+	public static ModelCubeWorld barrel;
 
 	public ClientProxy() {
 	}
@@ -28,7 +29,10 @@ public class ClientProxy extends ServerProxy {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGrave.class, new TileEntitySpecialRendererGrave());
 
 		angelStatue = new ModelCubeWorld( ModelCubeWorld.class.getResourceAsStream("/assets/gravestone/models/angelStatue.cub"));
+		barrel = new ModelCubeWorld( ModelCubeWorld.class.getResourceAsStream("/assets/gravestone/models/barrel.cub"));
+
 	}
+	
 
 	@Override
 	public void setCustomNameBoolean(TileEntityGrave te, boolean b) {

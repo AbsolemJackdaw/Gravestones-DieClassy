@@ -61,6 +61,10 @@ public class ModelTable {
 		case 9:
 			knight.render(0.0625f);
 			break;
+		case 10:
+			ClientProxy.barrel.render();
+			break;
+			
 		default :
 			cross.render(0.0625f);
 			break;

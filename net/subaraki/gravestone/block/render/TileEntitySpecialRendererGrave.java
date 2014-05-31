@@ -45,19 +45,33 @@ public class TileEntitySpecialRendererGrave extends TileEntitySpecialRenderer {
 			rot =+ 90;
 		}
 
-		float s = -0.65f;
-		
+		float s = -0.75f;
+		float s2 = -0.4f;
+rot = 0;
 		if(modeltype == 8){
 			GL11.glScalef(0.75f, 0.75f, 0.75f);
-			GL11.glTranslatef(-0.55f, 2f, 0.75f);
+			GL11.glTranslatef(-0.75f, 2f, 0.75f);
 			GL11.glTranslatef(-s, 0f, s);
+			
 			GL11.glRotatef(180, 1, 0, 0);
 			GL11.glRotatef(180, 0, 1, 0);
 		}
+		
+		if(modeltype == 10){
+			GL11.glScalef(1.0f, 1.0f, 1.0f);
+			GL11.glTranslatef(-0.4f, 1.5f, 0.4f);
+			GL11.glTranslatef(-s2, 0f, s2);
+			
+			GL11.glRotatef(180, 1, 0, 0);
+			GL11.glRotatef(180, 0, 1, 0);
+		}
+		
 		GL11.glRotatef(rot, 0.0F, 1.0F, 0.0F);
 
 		if(modeltype == 8)
 			GL11.glTranslatef(s, 0, -s);
+		if(modeltype == 10)
+			GL11.glTranslatef(s2, 0, -s2);
 
 		ModelTable.renderModelFromType(modeltype);
 		GL11.glPopMatrix();

@@ -165,6 +165,9 @@ public class BlockGrave extends Block{
 		case 9:
 			this.setBlockBounds(0.2f, 0.0F, 0.2F, 0.8f, 1.5f, 0.8f);
 			break;
+		case 10:
+			this.setBlockBounds(0.2f, 0.0F, 0.2F, 0.8f, 0.85f, 0.8f);
+			break;
 		default:
 			this.setBlockBounds(0.4f, 0.0F, 0.4F, 0.6f, 1.0f, 0.6f);
 			break;

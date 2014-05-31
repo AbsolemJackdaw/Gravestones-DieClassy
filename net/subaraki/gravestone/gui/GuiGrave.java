@@ -54,6 +54,7 @@ public class GuiGrave extends GuiScreen{
 		// this.buttonList.add(new GuiButton(11, posX-100 , posY , 80 ,20, "clear"));
 		this.buttonList.add(new GuiButton(8, posX , posY-10 , 80, 20, "Angel"));
 		this.buttonList.add(new GuiButton(9, posX , posY+20 , 80, 20, "Knight"));
+		this.buttonList.add(new GuiButton(10, posX , posY+20 , 80, 20, "Some Barrel"));
 
 	}
 
@@ -93,11 +94,22 @@ public class GuiGrave extends GuiScreen{
 		GL11.glScaled(scale, scale, -scale);
 
 		float s = -0.65f;
+		float s2 = -0.4f;
 		if(render == 8){
 
 			GL11.glScalef(1, -1, 1);
+			GL11.glRotatef(-10, 1f, 0f, 0f);
 			GL11.glTranslatef(-0.5f, -2.4f, 0f);
 			GL11.glTranslatef(-s, 0f, s);
+
+		}
+		
+		if(render == 10){
+			
+			GL11.glScalef(1, -1, 1);
+			GL11.glTranslatef(-0.5f, -1.5f, 0f);
+			GL11.glRotatef(-10, 1f, 0f, 0f);
+			GL11.glTranslatef(-s2, 0f, s2);
 
 		}
 
@@ -106,7 +118,10 @@ public class GuiGrave extends GuiScreen{
 
 		if(render == 8)
 			GL11.glTranslatef(s, 0, -s);
-
+		
+		if(render == 10){
+			GL11.glTranslatef(s2, 0, -s2);
+		}
 		ModelTable.renderModelFromType(render);
 
 		GL11.glPopMatrix();

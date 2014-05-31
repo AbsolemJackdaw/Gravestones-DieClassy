@@ -148,20 +148,30 @@ public class GuiGraveContainer extends GuiContainer{
 		GL11.glScaled(scale, scale, -scale);
 
 		float s = -0.65f;
-		if(render == 8){
-
+		float s2 = -0.4f;
+		if(render == 8 ){
 			GL11.glScalef(1, -1, 1);
 			GL11.glTranslatef(-0.5f, -2.4f, 0f);
 			GL11.glTranslatef(-s, 0f, s);
-
 		}
 
+		if(render == 10){
+			GL11.glScalef(1, -1, 1);
+			GL11.glTranslatef(-0.5f, -1.5f, 0f);
+			GL11.glRotatef(-10, 1f, 0f, 0f);
+			GL11.glTranslatef(-s2, 0f, s2);
+		}
+		
 		GL11.glRotatef(5, 1f, 0f, 0f);
 		GL11.glRotatef(rotationCounter++, 0, 1, 0);
 
 		if(render == 8)
 			GL11.glTranslatef(s, 0, -s);
 
+		if(render == 10){
+			GL11.glTranslatef(s2, 0, -s2);
+		}
+		
 		ModelTable.renderModelFromType(render);
 		GL11.glPopMatrix();
 
