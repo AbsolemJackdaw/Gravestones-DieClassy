@@ -10,6 +10,7 @@ import net.subaraki.gravestone.block.model.ModelPillar;
 import net.subaraki.gravestone.block.model.ModelStoneCross;
 import net.subaraki.gravestone.block.model.ModelTomb;
 import net.subaraki.gravestone.block.model.ModelWoodenGrave;
+import net.subaraki.gravestone.proxy.ClientProxy;
 
 public class ModelTable {
 
@@ -55,7 +56,7 @@ public class ModelTable {
 			pillar.render(0.0625f);
 			break;
 		case 8:
-			angel.render(0.0625f);
+			ClientProxy.angelStatue.render();
 			break;
 		case 9:
 			knight.render(0.0625f);
