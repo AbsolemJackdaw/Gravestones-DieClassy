@@ -383,7 +383,7 @@ public class TileEntityGrave extends TileEntity implements IInventory
 				slots[i] = list[i+47];
 			}
 			for(int i = 0; i < 4; i ++){
-				slots[i] = list[i+74];
+				slots[i+27] = list[i+74];
 			}
 			break;
 

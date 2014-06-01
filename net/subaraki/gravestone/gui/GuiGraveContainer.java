@@ -220,14 +220,16 @@ public class GuiGraveContainer extends GuiContainer{
 		this.buttonList.clear();
 		int i = 0;
 		int x = ((this.width/2) - (xSize/2)) + 4;
-		buttonList.add(new GuiTabButton(0, x     , 8, 40 , 20, "MC"));
+		int y = ((this.height/2) - (ySize/2));
+
+		buttonList.add(new GuiTabButton(0, x     , y, 40 , 20, "MC"));
 		i += 40;
 		if(GraveStones.hasRpgI){
-			buttonList.add(new GuiTabButton(1, x + i , 8, 40 , 20, "RpgI"));
+			buttonList.add(new GuiTabButton(1, x + i , y, 40 , 20, "RpgI"));
 			i+= 40;
 		}
 		if(GraveStones.hasTC){
-			buttonList.add(new GuiTabButton(2, x + i , 8, 40 , 20, "TC"));
+			buttonList.add(new GuiTabButton(2, x + i , y, 40 , 20, "TC"));
 		}
 	}
 

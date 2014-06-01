@@ -154,11 +154,11 @@ public class EventHandler {
 				te.tab = 0;
 				te.setInventorySlotContents(slot, is);
 				inv.setInventorySlotContents(slot, null);
-
-				addOtherInventory(te, player);
 			}
 		}
 
+		addOtherInventory(te, player);
+		
 		player.worldObj.setTileEntity(x, y+1, z, te);
 		player.worldObj.markBlockForUpdate(x, y+1, z);
 		te.markDirty();
