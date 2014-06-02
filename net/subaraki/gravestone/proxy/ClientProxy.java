@@ -28,8 +28,8 @@ public class ClientProxy extends ServerProxy {
 		GraveStones.channel.register(new ClientPacket());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGrave.class, new TileEntitySpecialRendererGrave());
 
-//		angelStatue = new ModelCubeWorld( ModelCubeWorld.class.getResourceAsStream("/assets/gravestone/models/angelStatue.cub"));
-//		barrel = new ModelCubeWorld( ModelCubeWorld.class.getResourceAsStream("/assets/gravestone/models/barrel.cub"));
+		angelStatue = new ModelCubeWorld( ModelCubeWorld.class.getResourceAsStream("/assets/gravestone/models/angelStatue.cub"));
+		barrel = new ModelCubeWorld( ModelCubeWorld.class.getResourceAsStream("/assets/gravestone/models/barrel.cub"));
 
 	}
 

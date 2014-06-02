@@ -11,6 +11,9 @@ import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 import net.subaraki.gravestone.GraveStones;
@@ -63,6 +66,10 @@ public class GuiGraveContainer extends GuiContainer{
 	private static final ResourceLocation graveGui = new ResourceLocation("subaraki:grave/grave_chest.png");
 
 	private ModelHead modelhead = new ModelHead();
+
+	private static final ItemStack vanilla = new ItemStack(Items.iron_sword);
+	private static final ItemStack tcon = new ItemStack(Items.diamond_chestplate);
+	private static final ItemStack rpgi = new ItemStack(Items.golden_chestplate);
 
 	public GuiGraveContainer(EntityPlayer player, TileEntityGrave grave ) {
 		super(new ContainerGrave(player.inventory, grave, player));
@@ -220,16 +227,16 @@ public class GuiGraveContainer extends GuiContainer{
 		this.buttonList.clear();
 		int i = 0;
 		int x = ((this.width/2) - (xSize/2)) + 4;
-		int y = ((this.height/2) - (ySize/2));
+		int y = ((this.height/2) - (ySize/2)) - 19;
 
-		buttonList.add(new GuiTabButton(0, x     , y, 40 , 20, "MC"));
+		buttonList.add(new GuiTabButton(0, x     , y, 40 , 20, "", te.tab == 0, this.vanilla, fontRendererObj));
 		i += 40;
 		if(GraveStones.hasRpgI){
-			buttonList.add(new GuiTabButton(1, x + i , y, 40 , 20, "RpgI"));
+			buttonList.add(new GuiTabButton(1, x + i , y, 40 , 20, "", te.tab == 1, this.rpgi, fontRendererObj));
 			i+= 40;
 		}
 		if(GraveStones.hasTC){
-			buttonList.add(new GuiTabButton(2, x + i , y, 40 , 20, "TC"));
+			buttonList.add(new GuiTabButton(2, x + i , y, 40 , 20, "", te.tab == 2, this.tcon,fontRendererObj));
 		}
 	}
 
@@ -240,16 +247,19 @@ public class GuiGraveContainer extends GuiContainer{
 		if(button.id == 0){
 			updateInventory(0);
 			tabText = "MineCraft";
+			initGui();
 		}
 
 		if(button.id == 1){
 			updateInventory(1);
 			tabText = "Rpg Inventory";
+			initGui();
 		}
 
 		if(button.id == 2){
 			updateInventory(2);
 			tabText = "Tinkers Construct";
+			initGui();
 		}
 	}
 
