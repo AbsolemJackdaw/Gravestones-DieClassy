@@ -54,7 +54,7 @@ public class GuiGrave extends GuiScreen{
 		// this.buttonList.add(new GuiButton(11, posX-100 , posY , 80 ,20, "clear"));
 		this.buttonList.add(new GuiButton(8, posX , posY-10 , 80, 20, "Angel"));
 		this.buttonList.add(new GuiButton(9, posX , posY+20 , 80, 20, "Knight"));
-		this.buttonList.add(new GuiButton(10, posX , posY+20 , 80, 20, "Some Barrel"));
+		this.buttonList.add(new GuiButton(10, posX , posY+50 , 80, 20, "Some Barrel"));
 
 	}
 

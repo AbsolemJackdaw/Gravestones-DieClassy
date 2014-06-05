@@ -70,6 +70,9 @@ public class GuiGraveContainer extends GuiContainer{
 	private static final ItemStack vanilla = new ItemStack(Items.iron_sword);
 	private static final ItemStack tcon = new ItemStack(Items.diamond_chestplate);
 	private static final ItemStack rpgi = new ItemStack(Items.golden_chestplate);
+	private static final ItemStack baub = new ItemStack(Items.gold_ingot);
+	private static final ItemStack galacti = new ItemStack(Blocks.glass);
+	private static final ItemStack mariculture = new ItemStack(Items.fish);
 
 	public GuiGraveContainer(EntityPlayer player, TileEntityGrave grave ) {
 		super(new ContainerGrave(player.inventory, grave, player));
@@ -92,7 +95,6 @@ public class GuiGraveContainer extends GuiContainer{
 
 				if(nameOfDeathPlayer.equals("!Empty!")){
 					gravetext = "The Grave is empty !";
-					GraveStones.proxy.setCustomNameBoolean(grave,true);
 				}
 
 				else{
@@ -101,8 +103,7 @@ public class GuiGraveContainer extends GuiContainer{
 
 
 			}else{
-				gravetext = grave.message1.replace("_"," ") + " "+grave.playername + " "+ grave.message2.replace("_", " ");
-				GraveStones.proxy.setCustomNameBoolean(grave,true);
+				gravetext = grave.message1+grave.playername + grave.message2;
 			}
 		}
 	}
@@ -226,17 +227,32 @@ public class GuiGraveContainer extends GuiContainer{
 
 		this.buttonList.clear();
 		int i = 0;
+		int i2 = 33;
 		int x = ((this.width/2) - (xSize/2)) + 4;
 		int y = ((this.height/2) - (ySize/2)) - 19;
 
-		buttonList.add(new GuiTabButton(0, x     , y, 40 , 20, "", te.tab == 0, this.vanilla, fontRendererObj));
-		i += 40;
+		buttonList.add(new GuiTabButton(0, x     , y, 35 , 20, "", te.tab == 0, this.vanilla, fontRendererObj));
+		i += i2;
 		if(GraveStones.hasRpgI){
-			buttonList.add(new GuiTabButton(1, x + i , y, 40 , 20, "", te.tab == 1, this.rpgi, fontRendererObj));
-			i+= 40;
+			buttonList.add(new GuiTabButton(1, x + i , y, 35 , 20, "", te.tab == 1, this.rpgi, fontRendererObj));
+			i+= i2;
 		}
 		if(GraveStones.hasTC){
-			buttonList.add(new GuiTabButton(2, x + i , y, 40 , 20, "", te.tab == 2, this.tcon,fontRendererObj));
+			buttonList.add(new GuiTabButton(2, x + i , y, 35 , 20, "", te.tab == 2, this.tcon,fontRendererObj));
+			i+= i2;
+		}
+
+		if(GraveStones.hasBaubel){
+			buttonList.add(new GuiTabButton(3, x + i , y, 35 , 20, "", te.tab == 3, this.baub,fontRendererObj));
+			i+= i2;
+		}
+		if(GraveStones.hasGalacti){
+			buttonList.add(new GuiTabButton(4, x + i , y, 35 , 20, "", te.tab == 4, this.galacti,fontRendererObj));
+			i+=i2;
+		}
+		if(GraveStones.hasMariCulture){
+			buttonList.add(new GuiTabButton(5, x + i , y, 35 , 20, "", te.tab == 5, this.mariculture,fontRendererObj));
+			i+=i;
 		}
 	}
 
@@ -244,23 +260,27 @@ public class GuiGraveContainer extends GuiContainer{
 	protected void actionPerformed(GuiButton button) {
 		super.actionPerformed(button);
 
-		if(button.id == 0){
-			updateInventory(0);
+		updateInventory(button.id);
+
+		if(button.id == 0)
 			tabText = "MineCraft";
-			initGui();
-		}
 
-		if(button.id == 1){
-			updateInventory(1);
+		if(button.id == 1)
 			tabText = "Rpg Inventory";
-			initGui();
-		}
 
-		if(button.id == 2){
-			updateInventory(2);
+		if(button.id == 2)
 			tabText = "Tinkers Construct";
-			initGui();
-		}
+
+		if(button.id == 3)
+			tabText = "Baubel Inventory";
+
+		if(button.id == 4)
+			tabText = "Galacticraft";
+
+		if(button.id == 5)
+			tabText = "Mariculture";
+
+		initGui();
 	}
 
 	private void updateInventory(int i){
@@ -293,6 +313,15 @@ public class GuiGraveContainer extends GuiContainer{
 			break;
 		case 2:
 			te.changeGrave(EnumGrave.TC);
+			break;
+		case 3:
+			te.changeGrave(EnumGrave.BAUBEL);
+			break;
+		case 4:
+			te.changeGrave(EnumGrave.GALACTICRAFT);
+			break;
+		case 5:
+			te.changeGrave(EnumGrave.MARICULTURE);
 			break;
 		}
 

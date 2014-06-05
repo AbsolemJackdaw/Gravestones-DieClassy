@@ -50,7 +50,7 @@ public class GuiTabButton extends GuiButton{
 			//left
 			this.drawTexturedModalRect(this.xPosition, this.yPosition - 9, 28, (32 - (k*32)) + 32, 28, page ? 32 : 28);
 			//right
-			this.drawTexturedModalRect(this.xPosition + 16, this.yPosition - 9, 28 + 4, (32 - (k*32)) + 32, 24, page ? 32 : 28);
+			this.drawTexturedModalRect(this.xPosition + 9, this.yPosition - 9, 28 + 4, (32 - (k*32)) + 32, 24, page ? 32 : 28);
 
 			this.mouseDragged(p_146112_1_, p_146112_2_, p_146112_3_);
 			int l = 14737632;
@@ -77,7 +77,7 @@ public class GuiTabButton extends GuiButton{
 	        GL11.glEnable(GL11.GL_LIGHTING);
 	        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 	        ItemStack itemstack = stack;
-	        itemRender.renderItemAndEffectIntoGUI(this.fontRendererObj, Minecraft.getMinecraft().getTextureManager(), itemstack, xPosition+12, yPosition);
+	        itemRender.renderItemAndEffectIntoGUI(this.fontRendererObj, Minecraft.getMinecraft().getTextureManager(), itemstack, xPosition+9, yPosition);
 	        itemRender.renderItemOverlayIntoGUI(this.fontRendererObj, Minecraft.getMinecraft().getTextureManager(), itemstack, xPosition, yPosition);
 	        GL11.glDisable(GL11.GL_LIGHTING);
 	        itemRender.zLevel = 0.0F;

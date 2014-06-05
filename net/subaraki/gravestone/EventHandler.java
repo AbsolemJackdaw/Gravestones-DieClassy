@@ -16,6 +16,7 @@ import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.Clone;
 import net.subaraki.gravestone.block.inventory.TileEntityGrave;
+import net.subaraki.gravestone.config.ConfigGraveStones;
 import net.subaraki.gravestone.proxy.ClientProxy;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.FMLLog;
@@ -47,14 +48,15 @@ public class EventHandler {
 	@SideOnly(Side.CLIENT)
 	public void keyHandling(KeyInputEvent evt){
 
-		if(ClientProxy.keyGui.isPressed()){
-			if(Minecraft.getMinecraft().currentScreen == null){
-				EntityPlayer p = Minecraft.getMinecraft().thePlayer;
+		if(ConfigGraveStones.enableGravesTroughKey)
+			if(ClientProxy.keyGui.isPressed()){
+				if(Minecraft.getMinecraft().currentScreen == null){
+					EntityPlayer p = Minecraft.getMinecraft().thePlayer;
 
-				p.openGui(GraveStones.instance, 1, Minecraft.getMinecraft().theWorld,
-						(int)p.posX, (int)p.posY, (int)p.posZ);
+					p.openGui(GraveStones.instance, 1, Minecraft.getMinecraft().theWorld,
+							(int)p.posX, (int)p.posY, (int)p.posZ);
+				}
 			}
-		}
 	}
 
 	@SubscribeEvent
@@ -143,7 +145,13 @@ public class EventHandler {
 		TileEntityGrave te = new TileEntityGrave();
 		InventoryPlayer inv = player.inventory;
 
-		te.setGraveData(player.getCommandSenderName(), PlayerData.get(player).getGraveModel());
+		int graveID = PlayerData.get(player).getGraveModel();
+		int max = 9;
+		
+		if(!ConfigGraveStones.enableGravesTroughKey)
+			graveID = ConfigGraveStones.graveOrder[Math.max((player.experienceLevel / ConfigGraveStones.graveLevel), max)];
+
+		te.setGraveData(player.getCommandSenderName(), graveID);
 
 
 		for(int slot = 0; slot <inv.getSizeInventory(); slot++)
@@ -158,7 +166,7 @@ public class EventHandler {
 		}
 
 		addOtherInventory(te, player);
-		
+
 		player.worldObj.setTileEntity(x, y+1, z, te);
 		player.worldObj.markBlockForUpdate(x, y+1, z);
 		te.markDirty();
@@ -181,6 +189,7 @@ public class EventHandler {
 				for(int i = 0; i < 7; i ++){
 					ItemStack is = inv.getStackInSlot(i);
 					te.list[i + 40] = is;
+					inv.setInventorySlotContents(i, null);
 				}
 			}catch (Exception e) {
 				FMLLog.getLogger().info("Error Encountered trying to acces RpgInventory Inventory Content. Please report to mod author");
@@ -200,6 +209,7 @@ public class EventHandler {
 				for(int i = 0; i < 27; i ++){
 					ItemStack is = sack.getStackInSlot(i);
 					te.list[i + 47] = is;
+					sack.setInventorySlotContents(i, null);
 				}
 			} catch (Exception e) {
 				FMLLog.getLogger().info("Error Encountered trying to acces Tinkers Construct Inventory Content. Please report to mod author");
@@ -210,16 +220,87 @@ public class EventHandler {
 				Method m = clazz.getDeclaredMethod("get", EntityPlayer.class);
 				Object result = m.invoke(null, p);
 				Field f = clazz.getDeclaredField("armor");
-				IInventory sack = (IInventory)f.get(result);
+				IInventory inv = (IInventory)f.get(result);
 
 				FMLLog.getLogger().info("Dumping all Tinkers Contruct Armor into grave");
 
 				for(int i = 0; i < 4; i ++){
-					ItemStack is = sack.getStackInSlot(i);
+					ItemStack is = inv.getStackInSlot(i);
 					te.list[i + 74] = is;
+					inv.setInventorySlotContents(i, null);
 				}
 			} catch (Exception e) {
 				FMLLog.getLogger().info("Error Encountered trying to acces Tinkers Construct Inventory Content. Please report to mod author");
+			}
+		}
+		
+		if(GraveStones.hasBaubel){
+			try {
+
+				Class<?> clazz = Class.forName("baubles.common.lib.PlayerHandler");
+				Method m = clazz.getDeclaredMethod("getPlayerBaubles", EntityPlayer.class);
+				Object result = m.invoke(null, p);
+
+				IInventory inv = (IInventory)result;
+
+				FMLLog.getLogger().info("Dumping all Baubles content into grave");
+
+				for(int i = 0; i < 4; i ++){
+					ItemStack is = inv.getStackInSlot(i);
+					te.list[i + 78] = is;
+					inv.setInventorySlotContents(i, null);
+				}
+			}catch (Exception e) {
+				FMLLog.getLogger().info("Error Encountered trying to acces Baubles' Inventory Content. Please report to mod author");
+			}
+		}
+		
+		if(GraveStones.hasGalacti){
+			try {
+
+				Class<?> clazz = Class.forName("baubles.common.lib.PlayerHandler");
+				Method m = clazz.getDeclaredMethod("getExtendedInventory", EntityPlayer.class);
+				Object result = m.invoke(null, p);
+
+				IInventory inv = (IInventory)result;
+
+				FMLLog.getLogger().info("Dumping all GalacticCraft content into grave");
+
+				for(int i = 0; i < 4; i ++){
+					ItemStack is = inv.getStackInSlot(i);
+					te.list[i + 82] = is;
+					inv.setInventorySlotContents(i, null);
+				}
+			}catch (Exception e) {
+				FMLLog.getLogger().info("Error Encountered trying to acces GalactiCraft's Inventory Content. Please report to mod author");
+			}
+		}
+		
+		if(GraveStones.hasMariCulture){
+			try {
+
+				Class<?> clazz = Class.forName("mariculture.magic.MirrorHelper");
+				Method m = clazz.getDeclaredMethod("getInventory", EntityPlayer.class);
+				Object result = m.invoke(null, p);
+
+				ItemStack[] inv = (ItemStack[])result;
+
+				FMLLog.getLogger().info("Dumping all Mariculture content into grave");
+
+				for(int i = 0; i < 3; i ++){
+					ItemStack is = inv[i];
+					te.list[i + 88] = is;
+				}
+				
+				ItemStack[] newstack = new ItemStack[3];
+				
+				//the save method is static
+				//the save method only has to be called to save the new (empty) itemstack
+				Method m2 = clazz.getDeclaredMethod("save", EntityPlayer.class, ItemStack[].class);
+				Object saveEmptyArray = m.invoke(null, p, newstack);
+				
+			}catch (Exception e) {
+				FMLLog.getLogger().info("Error Encountered trying to acces Mariculture's Inventory Content. Please report to mod author");
 			}
 		}
 	}

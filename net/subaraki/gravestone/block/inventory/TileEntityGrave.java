@@ -26,6 +26,12 @@ public class TileEntityGrave extends TileEntity implements IInventory
 	 * 40-46 is rpg invententory
 	 * 47-73 is tconstruct knapsack
 	 * 74-77 is tconstruct armor
+	 * 
+	 * 78 81 is baubel items
+	 * 
+	 * 82-87 is galacticraft
+	 * 
+	 * 88-90 is mariculture
 	 * */
 	public ItemStack[] list = new ItemStack[128];
 
@@ -48,7 +54,7 @@ public class TileEntityGrave extends TileEntity implements IInventory
 	public String message1 = "";
 	public String message2= "";
 
-	public boolean customName = false;
+	public boolean isDecorativeGrave = false;
 
 	public boolean hasItems = false;
 
@@ -179,6 +185,8 @@ public class TileEntityGrave extends TileEntity implements IInventory
 
 		otherPlayerHasTakenItemStack = nbt.getBoolean("isLooted");
 
+		isDecorativeGrave = nbt.getBoolean("decoGrave");
+		
 		NBTTagList tagList = nbt.getTagList("Items", Constants.NBT.TAG_COMPOUND);
 		for (int i = 0; i < tagList.tagCount(); i++) {
 			NBTTagCompound tag = tagList.getCompoundTagAt(i);
@@ -209,7 +217,8 @@ public class TileEntityGrave extends TileEntity implements IInventory
 		par1NBTTagCompound.setInteger("Meta", modelType);
 		par1NBTTagCompound.setFloat("rotation", ModelRotation);
 		par1NBTTagCompound.setBoolean("isLooted", otherPlayerHasTakenItemStack);
-
+		par1NBTTagCompound.setBoolean("decoGrave", isDecorativeGrave);
+		
 		NBTTagList nbttaglist = new NBTTagList();
 
 		for (int i = 0; i < this.slots.length; ++i)
@@ -387,6 +396,24 @@ public class TileEntityGrave extends TileEntity implements IInventory
 			}
 			break;
 
+		case BAUBEL:
+			for(int i = 0; i < 4; i ++){
+				slots[i] = list[i+78];
+			}
+			break;
+			
+		case GALACTICRAFT:
+			for(int i = 0; i < 6; i ++){
+				slots[i] = list[i+82];
+			}
+			break;
+			
+		case MARICULTURE:
+			for(int i = 0; i < 3; i ++){
+				slots[i] = list[i+88];
+			}
+			break;
+			
 		default:
 			break;
 
@@ -398,6 +425,9 @@ public class TileEntityGrave extends TileEntity implements IInventory
 	public enum EnumGrave{
 		VANILLA,
 		RPGI,
-		TC
+		TC,
+		BAUBEL,
+		GALACTICRAFT,
+		MARICULTURE
 	}
 }

@@ -236,7 +236,9 @@ public class ModelCubeWorld extends ModelBase {
 		}
 
 		glEnable(GL_TEXTURE_2D);
-		glDisable(GL_RESCALE_NORMAL);
+		//enabling this would render a shade in the inventory over blocks
+//		glDisable(GL_RESCALE_NORMAL);
+
 		glPopMatrix();
 	}
 
@@ -246,48 +248,5 @@ public class ModelCubeWorld extends ModelBase {
 	public void render(Entity par1Entity, float par2, float par3, float par4,
 			float par5, float par6, float par7) {
 		render();
-	}
-
-	/**
-	 * Contrairy to as the name says, this does not render the color from the
-	 * model, but allows you to apply another layer of color OVER the current
-	 * layer. This allows e.a. greyscale models to be colored as desired.
-	 * 
-	 * Has to be worked on : for now, it replaces the color, giving every cube
-	 * the same color
-	 * */
-	public void renderWithColor(float red, float green, float blue, float alpha) {
-
-		glPushMatrix();
-		glDisable(GL_TEXTURE_2D);
-		glEnable(GL_RESCALE_NORMAL);
-
-		final float scale = 0.0625F;
-		glScalef(scale, scale, scale);
-		glRotatef(-90F, 1F, 0F, 0F);
-
-		for (int i : pointers) {
-			final int x = i & 1023;
-			final int y = (i >> 10) & 1023;
-			final int z = (i >> 20) & 1023;
-
-			glTranslatef(x, y, z);
-
-			final byte[] color = modelData[x][y][z];
-			glColor3ub(color[0], color[1], color[2]);
-
-			/*
-			 * added this in.
-			 */
-			GL11.glColor3f(red, green, blue);
-
-			cube.render(1F);
-
-			glTranslatef(-x, -y, -z);
-		}
-
-		glEnable(GL_TEXTURE_2D);
-		glDisable(GL_RESCALE_NORMAL);
-		glPopMatrix();
 	}
 }

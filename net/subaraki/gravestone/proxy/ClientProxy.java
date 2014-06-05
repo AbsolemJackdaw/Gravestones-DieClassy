@@ -1,10 +1,13 @@
 package net.subaraki.gravestone.proxy;
 
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.item.Item;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.subaraki.gravestone.GraveStones;
 import net.subaraki.gravestone.block.inventory.TileEntityGrave;
 import net.subaraki.gravestone.block.model.ModelCubeWorld;
 import net.subaraki.gravestone.block.render.TileEntitySpecialRendererGrave;
+import net.subaraki.gravestone.item.RenderGrave;
 import net.subaraki.gravestone.packets.ClientPacket;
 
 import org.lwjgl.input.Keyboard;
@@ -31,11 +34,12 @@ public class ClientProxy extends ServerProxy {
 		angelStatue = new ModelCubeWorld( ModelCubeWorld.class.getResourceAsStream("/assets/gravestone/models/angelStatue.cub"));
 		barrel = new ModelCubeWorld( ModelCubeWorld.class.getResourceAsStream("/assets/gravestone/models/barrel.cub"));
 
+		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(GraveStones.graveStone), new RenderGrave());
 	}
 
 
 	@Override
 	public void setCustomNameBoolean(TileEntityGrave te, boolean b) {
-		te.customName = b;
+		te.isDecorativeGrave = b;
 	}
 }

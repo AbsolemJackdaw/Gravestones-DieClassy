@@ -36,17 +36,17 @@ public class TileEntitySpecialRendererGrave extends TileEntitySpecialRenderer {
 		GL11.glScalef(1.0F, -1F, -1F);
 
 
-		if( (modeltype == 2) || (modeltype == 3) || (modeltype == 6)){
+		if( (modeltype == 2) || (modeltype == 3) || (modeltype == 6) || modeltype == 8 || modeltype == 9|| modeltype == 5){
 			rot -= 90;
 		}
 
-		if(modeltype == 4){
+		if(modeltype == 4 ){
 			rot =+ 90;
 		}
 
 		float s = -0.75f;
 		float s2 = -0.4f;
-		rot = 0;
+
 		if(modeltype == 8){
 			GL11.glScalef(0.75f, 0.75f, 0.75f);
 			GL11.glTranslatef(-0.75f, 2f, 0.75f);
@@ -95,7 +95,7 @@ public class TileEntitySpecialRendererGrave extends TileEntitySpecialRenderer {
 				resourcelocation = new ResourceLocation("textures/entity/steve.png");
 			}
 			Minecraft.getMinecraft().renderEngine.bindTexture(resourcelocation);
-
+			GL11.glRotatef(rot, 0, 1, 0);
 			ModelTable.modelhead.renderHead(0.0625f);
 
 			if(tile.getStackInSlot(tile.getSizeInventory()-1) != null){
@@ -104,6 +104,7 @@ public class TileEntitySpecialRendererGrave extends TileEntitySpecialRenderer {
 					float f2 = 1.2f;
 					GL11.glScalef(f2,f2,f2);
 					GL11.glTranslatef(0f, 0.05f, 0f);
+					GL11.glRotatef(rot, 0, 1, 0);
 					ItemStack item = tile.getStackInSlot(tile.getSizeInventory()-1);
 					ModelTable.helper.setArmorModel(ModelTable.modelarmorhead, item,
 							((ItemArmor)item.getItem()).armorType, RenderBiped.bipedArmorFilenamePrefix[((ItemArmor)item.getItem()).renderIndex]);
@@ -119,9 +120,9 @@ public class TileEntitySpecialRendererGrave extends TileEntitySpecialRenderer {
 					float f2 = 1.1f;
 					GL11.glScalef(f2,f2,f2);
 					GL11.glTranslatef(0f, -0.02f, 0f);
+					GL11.glRotatef(rot, 0, 1, 0);
 					ItemStack item = tile.getStackInSlot(tile.getSizeInventory()-2);
-					ModelTable.helper.setArmorModel(ModelTable.modelarmorchest, item,
-							((ItemArmor)item.getItem()).armorType, RenderBiped.bipedArmorFilenamePrefix[((ItemArmor)item.getItem()).renderIndex]);
+					ModelTable.helper.setArmorModel(ModelTable.modelarmorchest, item,((ItemArmor)item.getItem()).armorType, RenderBiped.bipedArmorFilenamePrefix[((ItemArmor)item.getItem()).renderIndex]);
 					ModelTable.modelarmorchest.renderHead(0.0625f);
 					GL11.glPopMatrix();
 				}

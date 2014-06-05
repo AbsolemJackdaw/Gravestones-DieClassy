@@ -8,9 +8,12 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemNameTag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -46,10 +49,26 @@ public class BlockGrave extends Block{
 
 		TileEntityGrave te = (TileEntityGrave) world.getTileEntity(x, y, z);
 
+		if(player.getCurrentEquippedItem() != null)
+			if(player.getCurrentEquippedItem().getItem() instanceof ItemNameTag){
+				if(te.isDecorativeGrave){
+					String s = player.getCurrentEquippedItem().getDisplayName();
+					te.setName(s);
+					te.setDeathMessage(StatCollector.translateToLocal("is.Honored.To"));
+					te.setDeathMessage2(".");
+					return true;
+				}else{
+					if(!world.isRemote)
+						player.addChatComponentMessage(new ChatComponentText("This grave belongs to someone. I should not do that."));
+
+					return true;
+				}
+			}
+
 		if(!player.isSneaking()) {
 			player.openGui(GraveStones.instance, 0, world, x, y, z);
 		} else {
-			te.ModelRotation += 11.5f;
+			te.ModelRotation += 15f;
 		}
 
 		return true;
