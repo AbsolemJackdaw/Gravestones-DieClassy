@@ -21,8 +21,17 @@ public class GuiHandler implements IGuiHandler {
 	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer player, World world,
 			int x, int y, int z) {
-		TileEntity te = world.getTileEntity(x, y, z);
-		return ID == 0 ? new GuiGraveContainer(player, (TileEntityGrave) te) : new GuiGrave(player);
-	}
 
+		TileEntity te = world.getTileEntity(x, y, z);
+
+		switch (ID) {
+		case 0 :
+			return new GuiGraveContainer(player, (TileEntityGrave) te);
+		case 1:
+			return new GuiGrave(player);
+		}
+
+		return new GuiGraveContainer(player, (TileEntityGrave) te);
+
+	}
 }

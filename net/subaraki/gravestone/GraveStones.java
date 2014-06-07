@@ -78,7 +78,6 @@ public class GraveStones {
 		new net.subaraki.gravestone.EventHandler();
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
 
-
 		try {
 			Class classRpgI = Class.forName("rpgInventory.RpgInventoryMod");
 

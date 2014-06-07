@@ -53,8 +53,7 @@ public class EventHandler {
 				if(Minecraft.getMinecraft().currentScreen == null){
 					EntityPlayer p = Minecraft.getMinecraft().thePlayer;
 
-					p.openGui(GraveStones.instance, 1, Minecraft.getMinecraft().theWorld,
-							(int)p.posX, (int)p.posY, (int)p.posZ);
+					p.openGui(GraveStones.instance, 1, Minecraft.getMinecraft().theWorld,(int)p.posX, (int)p.posY, (int)p.posZ);
 				}
 			}
 	}
