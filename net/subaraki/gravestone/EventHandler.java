@@ -291,7 +291,7 @@ public class EventHandler {
 					te.list[i + 88] = is;
 				}
 				
-				ItemStack[] newstack = new ItemStack[3];
+				ItemStack[] newstack = new ItemStack[4];
 				
 				//the save method is static
 				//the save method only has to be called to save the new (empty) itemstack
