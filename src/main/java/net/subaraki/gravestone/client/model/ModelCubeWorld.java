@@ -30,8 +30,6 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import org.lwjgl.opengl.GL11;
-
 public class ModelCubeWorld extends ModelBase {
 
 	byte[][][][] modelData;

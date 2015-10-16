@@ -19,17 +19,16 @@ import net.subaraki.gravestone.GraveStones;
 import net.subaraki.gravestone.client.ClientProxy;
 import net.subaraki.gravestone.tileentity.TileEntityGravestone;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class EventHandler {
+public class GravestoneEventHandler {
 
 
-	public EventHandler() {
+	public GravestoneEventHandler() {
 
 		MinecraftForge.EVENT_BUS.register(this);
 		FMLCommonHandler.instance().bus().register(this);
@@ -110,7 +109,7 @@ public class EventHandler {
 
 					if(player.worldObj.getBlock(x+x2, y+y2, z+z2).getMaterial().isSolid()){
 						if(player.worldObj.getBlock(x+x2, y+1+y2, z+z2).getMaterial().equals(Material.air)){
-							FMLLog.getLogger().info("Potential grave at " + (x+x2) +" " + (y+y2)+ " "+ (z+z2));
+							GraveStones.printDebugMessage("Potential grave at " + (x+x2) +" " + (y+y2)+ " "+ (z+z2));
 
 							placeGrave(player, x+x2, y+y2, z+z2);
 
@@ -146,7 +145,7 @@ public class EventHandler {
 
 		int graveID = PlayerGraveData.get(player).getGraveModel();
 		int max = 9;
-		
+
 		if(!ConfigHandler.enableGravesTroughKey)
 			graveID = ConfigHandler.graveOrder[Math.max((player.experienceLevel / ConfigHandler.graveLevel), max)];
 
@@ -172,135 +171,128 @@ public class EventHandler {
 	}
 
 
-	private void addOtherInventory(TileEntityGravestone te, EntityPlayer p){
+	private void addOtherInventory(TileEntityGravestone te, EntityPlayer player){
 
 		if(GraveStones.hasRpgI){
-			try {
+			IInventory inv = accesInventoryContents(player, "get", "rpgInventory.gui.rpginv.PlayerRpgInventory", "Rpg Inventory");
 
-				Class<?> clazz = Class.forName("rpgInventory.gui.rpginv.PlayerRpgInventory");
-				Method m = clazz.getDeclaredMethod("get", EntityPlayer.class);
-				Object result = m.invoke(null, p);
-
-				IInventory inv = (IInventory)result;
-
-				FMLLog.getLogger().info("Dumping all Rpg Inventory content into grave");
-
-				for(int i = 0; i < 7; i ++){
-					ItemStack is = inv.getStackInSlot(i);
-					te.list[i + 40] = is;
-					inv.setInventorySlotContents(i, null);
-				}
-			}catch (Exception e) {
-				FMLLog.getLogger().info("Error Encountered trying to acces RpgInventory Inventory Content. Please report to mod author");
+			for(int i = 0; i < 7; i ++){
+				ItemStack is = inv.getStackInSlot(i);
+				te.list[i + 40] = is;
+				inv.setInventorySlotContents(i, null);
 			}
 		}
 
-		if(GraveStones.hasTC){
-			try {
-				Class<?> clazz = Class.forName("tconstruct.util.player.TPlayerStats");
-				Method m = clazz.getDeclaredMethod("get", EntityPlayer.class);
-				Object result = m.invoke(null, p);
-				Field f = clazz.getDeclaredField("knapsack");
-				IInventory sack = (IInventory)f.get(result);
+		if(GraveStones.hasTiCo){
+			IInventory sack = accesInventoryContents(player, "get",  "tconstruct.util.player.TPlayerStats", "knapsack", "Tinkers Construct");
+			IInventory inv = accesInventoryContents(player, "get",  "tconstruct.util.player.TPlayerStats", "armor", "Tinkers Construct");
 
-				FMLLog.getLogger().info("Dumping all Tinkers Contruct Knapsack into grave");
-
-				for(int i = 0; i < 27; i ++){
-					ItemStack is = sack.getStackInSlot(i);
-					te.list[i + 47] = is;
-					sack.setInventorySlotContents(i, null);
-				}
-			} catch (Exception e) {
-				FMLLog.getLogger().info("Error Encountered trying to acces Tinkers Construct Inventory Content. Please report to mod author");
+			for(int i = 0; i < 27; i ++){
+				ItemStack is = sack.getStackInSlot(i);
+				te.list[i + 47] = is;
+				sack.setInventorySlotContents(i, null);
 			}
 
-			try {
-				Class<?> clazz = Class.forName("tconstruct.util.player.TPlayerStats");
-				Method m = clazz.getDeclaredMethod("get", EntityPlayer.class);
-				Object result = m.invoke(null, p);
-				Field f = clazz.getDeclaredField("armor");
-				IInventory inv = (IInventory)f.get(result);
-
-				FMLLog.getLogger().info("Dumping all Tinkers Contruct Armor into grave");
-
-				for(int i = 0; i < 4; i ++){
-					ItemStack is = inv.getStackInSlot(i);
-					te.list[i + 74] = is;
-					inv.setInventorySlotContents(i, null);
-				}
-			} catch (Exception e) {
-				FMLLog.getLogger().info("Error Encountered trying to acces Tinkers Construct Inventory Content. Please report to mod author");
+			for(int i = 0; i < 4; i ++){
+				ItemStack is = inv.getStackInSlot(i);
+				te.list[i + 74] = is;
+				inv.setInventorySlotContents(i, null);
 			}
 		}
-		
-		if(GraveStones.hasBaubel){
-			try {
 
-				Class<?> clazz = Class.forName("baubles.common.lib.PlayerHandler");
-				Method m = clazz.getDeclaredMethod("getPlayerBaubles", EntityPlayer.class);
-				Object result = m.invoke(null, p);
+		if(GraveStones.hasBaub){
+			IInventory inv = accesInventoryContents(player, "getPlayerBaubles",  "baubles.common.lib.PlayerHandler", "Baubles");
 
-				IInventory inv = (IInventory)result;
-
-				FMLLog.getLogger().info("Dumping all Baubles content into grave");
-
-				for(int i = 0; i < 4; i ++){
-					ItemStack is = inv.getStackInSlot(i);
-					te.list[i + 78] = is;
-					inv.setInventorySlotContents(i, null);
-				}
-			}catch (Exception e) {
-				FMLLog.getLogger().info("Error Encountered trying to acces Baubles' Inventory Content. Please report to mod author");
+			for(int i = 0; i < 4; i ++){
+				ItemStack is = inv.getStackInSlot(i);
+				te.list[i + 78] = is;
+				inv.setInventorySlotContents(i, null);
 			}
 		}
-		
-		if(GraveStones.hasGalacti){
-			try {
 
-				Class<?> clazz = Class.forName("baubles.common.lib.PlayerHandler");
-				Method m = clazz.getDeclaredMethod("getExtendedInventory", EntityPlayer.class);
-				Object result = m.invoke(null, p);
+		if(GraveStones.hasGal_Craft){
+			ItemStack[] inv = accesInventoryContentsStacks(player, "getExtendedInventory", "micdoodle8.mods.galacticraft.core.inventory.InventoryExtended", "GalactiCraft");
 
-				IInventory inv = (IInventory)result;
-
-				FMLLog.getLogger().info("Dumping all GalacticCraft content into grave");
-
-				for(int i = 0; i < 4; i ++){
-					ItemStack is = inv.getStackInSlot(i);
-					te.list[i + 82] = is;
-					inv.setInventorySlotContents(i, null);
-				}
-			}catch (Exception e) {
-				FMLLog.getLogger().info("Error Encountered trying to acces GalactiCraft's Inventory Content. Please report to mod author");
+			for(int i = 0; i < 10; i ++){
+				ItemStack is = inv[i];
+				te.list[i + 82] = is;
+				inv[i] = null;
 			}
 		}
-		
-		if(GraveStones.hasMariCulture){
+
+		if(GraveStones.hasMari_Cul){
+			ItemStack[] inv = accesInventoryContentsStacks(player, "getInventory", "mariculture.magic.MirrorHelper", "Mariculture");
+			for(int i = 0; i < 3; i ++){
+				ItemStack is = inv[i];
+				te.list[i + 88] = is;
+			}
+
+			//the save method is static
+			//the save method only has to be called to save the new (empty) itemstack
 			try {
-
-				Class<?> clazz = Class.forName("mariculture.magic.MirrorHelper");
-				Method m = clazz.getDeclaredMethod("getInventory", EntityPlayer.class);
-				Object result = m.invoke(null, p);
-
-				ItemStack[] inv = (ItemStack[])result;
-
-				FMLLog.getLogger().info("Dumping all Mariculture content into grave");
-
-				for(int i = 0; i < 3; i ++){
-					ItemStack is = inv[i];
-					te.list[i + 88] = is;
-				}
-				
 				ItemStack[] newstack = new ItemStack[4];
-				
-				//the save method is static
-				//the save method only has to be called to save the new (empty) itemstack
+				Class<?> clazz = Class.forName("mariculture.magic.MirrorHelper");
 				Method m2 = clazz.getDeclaredMethod("save", EntityPlayer.class, ItemStack[].class);
-				Object saveEmptyArray = m.invoke(null, p, newstack);
-				
-			}catch (Exception e) {
-				FMLLog.getLogger().info("Error Encountered trying to acces Mariculture's Inventory Content. Please report to mod author");
+				Object saveEmptyArray = m2.invoke(null, player, newstack);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
+	}
+
+	private IInventory accesInventoryContents(EntityPlayer player, String methodName, String path, String modName){
+
+		try {
+
+			Class<?> clazz = Class.forName(path);
+			Method m = clazz.getDeclaredMethod(methodName, EntityPlayer.class);
+			Object result = m.invoke(null, player);
+			GraveStones.printDebugMessage("Dumping all " + modName + " content into grave");
+			return (IInventory)result;
+
+		} catch (Exception e){
+			GraveStones.printDebugMessage("Error Encountered trying to acces " + modName +"  Inventory Content. Please report to mod author");
+		}
+
+		return null;
+	}
+
+	private ItemStack[] accesInventoryContentsStacks(EntityPlayer player, String methodName, String path, String modName){
+
+		try {
+
+			Class<?> clazz = Class.forName(path);
+			Method m = clazz.getDeclaredMethod(methodName, EntityPlayer.class);
+			Object result = m.invoke(null, player);
+			GraveStones.printDebugMessage("Dumping all " + modName + " content into grave");
+			return (ItemStack[])result;
+
+		} catch (Exception e){
+			GraveStones.printDebugMessage("Error Encountered trying to acces " + modName +"  Inventory Content. Please report to mod author");
+		}
+
+		return null;
+	}
+
+	private IInventory accesInventoryContents(EntityPlayer player, String methodName, String path, String declaredField , String modName){
+
+		try {
+
+			Class<?> clazz = Class.forName(path);
+			Method m = clazz.getDeclaredMethod(methodName, EntityPlayer.class);
+			Object result = m.invoke(null, player);
+
+			Field f = clazz.getDeclaredField(declaredField);
+
+			IInventory inv = (IInventory)f.get(result);
+
+			GraveStones.printDebugMessage("Dumping all " + modName + " content into grave");
+			return inv;
+
+		} catch (Exception e){
+			GraveStones.printDebugMessage("Error Encountered trying to acces " + modName +"  Inventory Content. Please report to mod author");
+		}
+
+		return null;
 	}
 }

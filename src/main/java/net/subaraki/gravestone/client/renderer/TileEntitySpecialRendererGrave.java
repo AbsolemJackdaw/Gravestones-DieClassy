@@ -1,7 +1,6 @@
 package net.subaraki.gravestone.client.renderer;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderBiped;
@@ -13,26 +12,28 @@ import net.minecraft.util.ResourceLocation;
 import net.subaraki.gravestone.handler.ModelHandler;
 import net.subaraki.gravestone.handler.TextureHandler;
 import net.subaraki.gravestone.tileentity.TileEntityGravestone;
+import net.subaraki.gravestone.util.GraveUtility;
 
 import org.lwjgl.opengl.GL11;
 
 
 public class TileEntitySpecialRendererGrave extends TileEntitySpecialRenderer {
 
-	@Override
-	public void renderTileEntityAt(TileEntity var1, double d, double d1,
-			double d2, float var8) {
+	ResourceLocation texture = null;
 
-		TileEntityGravestone tile = (TileEntityGravestone)var1;
+	@Override
+	public void renderTileEntityAt(TileEntity te, double x, double y, double z, float f) {
+
+		TileEntityGravestone tile = (TileEntityGravestone)te;
 		float rot = tile.ModelRotation;
 		int modeltype = tile.modelType;
 
-		renderBeam(tile, d, d1, d2);
+		renderBeam(tile, x, y, z);
 
 		GL11.glPushMatrix();
 		this.bindTexture(TextureHandler.getTextureFromMeta(modeltype));
 
-		GL11.glTranslatef((float)d + 0.5F, (float)d1 + 1.5F, (float)d2 + 0.5F);
+		GL11.glTranslatef((float)x + 0.5F, (float)y + 1.5F, (float)z + 0.5F);
 		GL11.glScalef(1.0F, -1F, -1F);
 
 
@@ -79,22 +80,15 @@ public class TileEntitySpecialRendererGrave extends TileEntitySpecialRenderer {
 
 		GL11.glPushMatrix();
 
-		GL11.glTranslatef((float)d + 0.5F, (float)d1 + 1.5F, (float)d2 + 0.5F);
+		GL11.glTranslatef((float)x + 0.5F, (float)y + 1.5F, (float)z + 0.5F);
 		GL11.glScalef(1.0F, -1F, -1F);
 		float sc = 0.75f;
 		GL11.glScalef(sc, sc, sc);
 
 		if(modeltype == 5){
-			ResourceLocation resourcelocation = AbstractClientPlayer.locationStevePng;
-			if ((tile.playername != null) && (tile.playername.length() > 0))
-			{
-				resourcelocation = AbstractClientPlayer.getLocationSkin(tile.playername);
-				AbstractClientPlayer.getDownloadImageSkin(resourcelocation, tile.playername);
 
-			}else{
-				resourcelocation = new ResourceLocation("textures/entity/steve.png");
-			}
-			Minecraft.getMinecraft().renderEngine.bindTexture(resourcelocation);
+			bindTexture(GraveUtility.instance.processPlayerTexture(tile.playername));
+
 			GL11.glRotatef(rot, 0, 1, 0);
 			ModelHandler.modelhead.renderHead(0.0625f);
 
@@ -106,8 +100,7 @@ public class TileEntitySpecialRendererGrave extends TileEntitySpecialRenderer {
 					GL11.glTranslatef(0f, 0.05f, 0f);
 					GL11.glRotatef(rot, 0, 1, 0);
 					ItemStack item = tile.getStackInSlot(tile.getSizeInventory()-1);
-					ModelHandler.helper.setArmorModel(ModelHandler.modelarmorhead, item,
-							((ItemArmor)item.getItem()).armorType, RenderBiped.bipedArmorFilenamePrefix[((ItemArmor)item.getItem()).renderIndex]);
+					ModelHandler.helper.setArmorModel(ModelHandler.modelarmorhead, item,((ItemArmor)item.getItem()).armorType, RenderBiped.bipedArmorFilenamePrefix[((ItemArmor)item.getItem()).renderIndex]);
 					ModelHandler.modelarmorhead.renderHead(0.0625f);
 					GL11.glPopMatrix();
 				}

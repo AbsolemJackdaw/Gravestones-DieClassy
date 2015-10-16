@@ -1,4 +1,4 @@
-package net.subaraki.gravestone.client.model;
+package net.subaraki.gravestone.handler;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack;
 
 import org.lwjgl.opengl.GL11;
 
-public class ModelArmorHelper {
+public class GraveArmorHandler {
 
 	/**
 	 * Set the specified armor model as the player model. Args: player, armorSlot, partialTick

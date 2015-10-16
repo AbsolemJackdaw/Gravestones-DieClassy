@@ -7,6 +7,8 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+import net.subaraki.gravestone.inventory.slot.SlotArmorGrave;
+import net.subaraki.gravestone.inventory.slot.SlotGrave;
 import net.subaraki.gravestone.tileentity.TileEntityGravestone;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

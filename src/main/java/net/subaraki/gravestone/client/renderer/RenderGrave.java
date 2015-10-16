@@ -1,13 +1,13 @@
-package net.subaraki.gravestone.item;
+package net.subaraki.gravestone.client.renderer;
 
+import static net.subaraki.gravestone.util.Constants.GRAVE_PLACEHOLDER;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
-import net.subaraki.gravestone.tileentity.TileEntityGravestone;
 
 public class RenderGrave implements IItemRenderer {
 
-	TileEntityGravestone grave = new TileEntityGravestone();
 	@Override
 	public boolean handleRenderType(ItemStack item, ItemRenderType type) {
 		return true;
@@ -22,9 +22,10 @@ public class RenderGrave implements IItemRenderer {
 	@Override
 	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
 		
-		grave.modelType = item.getItemDamage();
+		GRAVE_PLACEHOLDER.modelType = item.getItemDamage();
 		
-		TileEntityRendererDispatcher.instance.renderTileEntityAt(grave, 0,0,0,0.0625f);
+		TileEntitySpecialRenderer tesr = TileEntityRendererDispatcher.instance.getSpecialRenderer(GRAVE_PLACEHOLDER);
+		tesr.renderTileEntityAt(GRAVE_PLACEHOLDER, 0, 0, 0, 0);
 	}
 
 }

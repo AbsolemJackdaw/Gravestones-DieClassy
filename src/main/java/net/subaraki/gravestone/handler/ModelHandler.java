@@ -1,8 +1,6 @@
 package net.subaraki.gravestone.handler;
 
-import net.subaraki.gravestone.client.ClientProxy;
 import net.subaraki.gravestone.client.model.ModelAngel;
-import net.subaraki.gravestone.client.model.ModelArmorHelper;
 import net.subaraki.gravestone.client.model.ModelGraveSkeleton;
 import net.subaraki.gravestone.client.model.ModelGraveStone;
 import net.subaraki.gravestone.client.model.ModelHead;
@@ -11,6 +9,7 @@ import net.subaraki.gravestone.client.model.ModelPillar;
 import net.subaraki.gravestone.client.model.ModelStoneCross;
 import net.subaraki.gravestone.client.model.ModelTomb;
 import net.subaraki.gravestone.client.model.ModelWoodenGrave;
+import net.subaraki.gravestone.util.Constants;
 
 public class ModelHandler {
 
@@ -27,7 +26,7 @@ public class ModelHandler {
 	public static ModelHead modelarmorhead = new ModelHead();
 	public static ModelHead modelarmorchest = new ModelHead();
 
-	public static final ModelArmorHelper helper = new ModelArmorHelper();
+	public static final GraveArmorHandler helper = new GraveArmorHandler();
 
 	public static void renderModelFromType(int modelType){
 
@@ -37,7 +36,6 @@ public class ModelHandler {
 			break;
 		case 2:
 			gravestone.render(0.0625f);
-
 			break;
 		case 3 :
 			tomb.render(0.0625f);
@@ -51,24 +49,22 @@ public class ModelHandler {
 			break;
 		case 6:
 			wood.render(0.0625f);
-
 		case 7:
 			pillar.render(0.0625f);
 			break;
 		case 8:
-			ClientProxy.angelStatue.render();
+			Constants.angelStatue.render();
 			break;
 		case 9:
 			knight.render(0.0625f);
 			break;
 		case 10:
-			ClientProxy.barrel.render();
+			Constants.barrel.render();
 			break;
 
 		default :
 			cross.render(0.0625f);
 			break;
 		}
-
 	}
 }

@@ -1,42 +1,34 @@
 package net.subaraki.gravestone.client.gui;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufOutputStream;
-import io.netty.buffer.Unpooled;
-
-import java.io.IOException;
-
-import net.minecraft.client.Minecraft;
+import static net.subaraki.gravestone.util.Constants.BAUBEL;
+import static net.subaraki.gravestone.util.Constants.GALACTICRAFT;
+import static net.subaraki.gravestone.util.Constants.ICON_BAUBLES;
+import static net.subaraki.gravestone.util.Constants.ICON_GALACTICRAFT;
+import static net.subaraki.gravestone.util.Constants.ICON_MARICULTURE;
+import static net.subaraki.gravestone.util.Constants.ICON_RPGI;
+import static net.subaraki.gravestone.util.Constants.ICON_TCON;
+import static net.subaraki.gravestone.util.Constants.ICON_VANILLA;
+import static net.subaraki.gravestone.util.Constants.MARICULTURE;
+import static net.subaraki.gravestone.util.Constants.RPGI;
+import static net.subaraki.gravestone.util.Constants.TC;
+import static net.subaraki.gravestone.util.Constants.VANILLA;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 import net.subaraki.gravestone.GraveStones;
-import net.subaraki.gravestone.client.model.ModelAngel;
-import net.subaraki.gravestone.client.model.ModelGraveSkeleton;
-import net.subaraki.gravestone.client.model.ModelGraveStone;
 import net.subaraki.gravestone.client.model.ModelHead;
-import net.subaraki.gravestone.client.model.ModelKnight;
-import net.subaraki.gravestone.client.model.ModelPillar;
-import net.subaraki.gravestone.client.model.ModelStoneCross;
-import net.subaraki.gravestone.client.model.ModelTomb;
-import net.subaraki.gravestone.client.model.ModelWoodenGrave;
-import net.subaraki.gravestone.handler.ModelHandler;
+import net.subaraki.gravestone.common.network.PacketSwitchSlotLayout;
 import net.subaraki.gravestone.handler.GraveTextHandler;
+import net.subaraki.gravestone.handler.ModelHandler;
 import net.subaraki.gravestone.handler.TextureHandler;
 import net.subaraki.gravestone.inventory.ContainerGrave;
-import net.subaraki.gravestone.packets.ServerPacket;
 import net.subaraki.gravestone.tileentity.TileEntityGravestone;
-import net.subaraki.gravestone.tileentity.TileEntityGravestone.EnumGrave;
+import net.subaraki.gravestone.util.GraveUtility;
 
 import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.common.network.internal.FMLProxyPacket;
 
 public class GuiGraveContainer extends GuiContainer{
 
@@ -48,31 +40,16 @@ public class GuiGraveContainer extends GuiContainer{
 	public EntityPlayer playerOpenGui;
 
 	public String nameOfDeathPlayer;
-	public String nameOfPlayerOpeningGui;
 
 	private TileEntityGravestone te;
 
 	private String tabText = "MineCraft";
 
-	public static final ModelAngel angel = new ModelAngel();
-	public static final ModelGraveSkeleton skeleton = new ModelGraveSkeleton();
-	public static final ModelGraveStone gravestone = new ModelGraveStone();
-	public static final ModelKnight knight = new ModelKnight();
-	public static final ModelPillar pillar = new ModelPillar();
-	public static final ModelStoneCross cross = new ModelStoneCross();
-	public static final ModelTomb tomb = new ModelTomb();
-	public static final ModelWoodenGrave wood = new ModelWoodenGrave();
-
-	private static final ResourceLocation graveGui = new ResourceLocation("subaraki:grave/grave_chest.png");
+	private static final ResourceLocation graveGui = new ResourceLocation("grave:textures/entity/tile/grave_chest.png");
 
 	private ModelHead modelhead = new ModelHead();
 
-	private static final ItemStack vanilla = new ItemStack(Items.iron_sword);
-	private static final ItemStack tcon = new ItemStack(Items.diamond_chestplate);
-	private static final ItemStack rpgi = new ItemStack(Items.golden_chestplate);
-	private static final ItemStack baub = new ItemStack(Items.gold_ingot);
-	private static final ItemStack galacti = new ItemStack(Blocks.glass);
-	private static final ItemStack mariculture = new ItemStack(Items.fish);
+	private ResourceLocation texture;
 
 	public GuiGraveContainer(EntityPlayer player, TileEntityGravestone grave ) {
 		super(new ContainerGrave(player.inventory, grave, player));
@@ -81,7 +58,6 @@ public class GuiGraveContainer extends GuiContainer{
 		playerOpenGui = player;
 
 		nameOfDeathPlayer = grave.playername;
-		nameOfPlayerOpeningGui = player.getCommandSenderName();
 
 		te = grave;
 
@@ -91,17 +67,12 @@ public class GuiGraveContainer extends GuiContainer{
 		if(grave != null) {
 			if(grave.message1.length() <= 0)
 			{
-				GraveStones.proxy.setCustomNameBoolean(grave,false);
+				grave.isDecorativeGrave = false;
 
-				if(nameOfDeathPlayer.equals("!Empty!")){
+				if(nameOfDeathPlayer.equals("!Empty!"))
 					gravetext = "The Grave is empty !";
-				}
-
-				else{
+				else
 					gravetext = GraveTextHandler.getStringFromMeta(nameOfDeathPlayer, te.modelType);
-				}
-
-
 			}else{
 				gravetext = grave.message1+grave.playername + grave.message2;
 			}
@@ -189,33 +160,18 @@ public class GuiGraveContainer extends GuiContainer{
 		}
 	}
 
-	ResourceLocation resourcelocation = AbstractClientPlayer.locationStevePng;
-	ResourceLocation steve = new ResourceLocation("textures/entity/steve.png");
-
 	private void renderBust()
 	{
 		GL11.glPushMatrix();
-		if(playerOpenGui != null)
-		{
-			try{
-				if ((nameOfDeathPlayer != null) && (nameOfDeathPlayer.length() > 0))
-				{
-					resourcelocation = AbstractClientPlayer.getLocationSkin(nameOfDeathPlayer);
-					AbstractClientPlayer.getDownloadImageSkin(resourcelocation, nameOfDeathPlayer);
 
-				}else{
-					resourcelocation = steve;
-				}
-				Minecraft.getMinecraft().renderEngine.bindTexture(resourcelocation);
-			}catch(Throwable e){}
+		mc.renderEngine.bindTexture( GraveUtility.instance.processPlayerTexture(nameOfDeathPlayer));
 
-			GL11.glTranslatef((this.width / 2)-150, (this.height / 2)-40, 40);
-			GL11.glScaled(50, 50, -50);
-			GL11.glRotatef(5, 1f, 0f, 0f);
-			GL11.glRotatef(rotationCounter, 0, 1, 0);
+		GL11.glTranslatef((this.width / 2)-150, (this.height / 2)-40, 40);
+		GL11.glScaled(50, 50, -50);
+		GL11.glRotatef(5, 1f, 0f, 0f);
+		GL11.glRotatef(rotationCounter, 0, 1, 0);
 
-			ModelHandler.modelhead.renderHead(0.0625f);
-		}
+		ModelHandler.modelhead.renderHead(0.0625f);
 		GL11.glPopMatrix();
 
 	}
@@ -226,33 +182,33 @@ public class GuiGraveContainer extends GuiContainer{
 		super.initGui();
 
 		this.buttonList.clear();
-		int i = 0;
-		int i2 = 33;
+		int offsetX = 0;
+		int offsetSize = 33;
 		int x = ((this.width/2) - (xSize/2)) + 4;
 		int y = ((this.height/2) - (ySize/2)) - 19;
 
-		buttonList.add(new GuiTabButton(0, x     , y, 35 , 20, "", te.tab == 0, this.vanilla, fontRendererObj));
-		i += i2;
+		buttonList.add(new GuiTabButton(0, x     , y, 35 , 20, "", te.tab == 0, ICON_VANILLA, fontRendererObj));
+		offsetX += offsetSize;
 		if(GraveStones.hasRpgI){
-			buttonList.add(new GuiTabButton(1, x + i , y, 35 , 20, "", te.tab == 1, this.rpgi, fontRendererObj));
-			i+= i2;
+			buttonList.add(new GuiTabButton(1, x + offsetX , y, 35 , 20, "", te.tab == 1, ICON_RPGI, fontRendererObj));
+			offsetX += offsetSize;
 		}
-		if(GraveStones.hasTC){
-			buttonList.add(new GuiTabButton(2, x + i , y, 35 , 20, "", te.tab == 2, this.tcon,fontRendererObj));
-			i+= i2;
+		if(GraveStones.hasTiCo){
+			buttonList.add(new GuiTabButton(2, x + offsetX , y, 35 , 20, "", te.tab == 2, ICON_TCON,fontRendererObj));
+			offsetX += offsetSize;
 		}
 
-		if(GraveStones.hasBaubel){
-			buttonList.add(new GuiTabButton(3, x + i , y, 35 , 20, "", te.tab == 3, this.baub,fontRendererObj));
-			i+= i2;
+		if(GraveStones.hasBaub){
+			buttonList.add(new GuiTabButton(3, x + offsetX , y, 35 , 20, "", te.tab == 3, ICON_BAUBLES,fontRendererObj));
+			offsetX += offsetSize;
 		}
-		if(GraveStones.hasGalacti){
-			buttonList.add(new GuiTabButton(4, x + i , y, 35 , 20, "", te.tab == 4, this.galacti,fontRendererObj));
-			i+=i2;
+		if(GraveStones.hasGal_Craft){
+			buttonList.add(new GuiTabButton(4, x + offsetX , y, 35 , 20, "", te.tab == 4, ICON_GALACTICRAFT,fontRendererObj));
+			offsetX +=offsetSize;
 		}
-		if(GraveStones.hasMariCulture){
-			buttonList.add(new GuiTabButton(5, x + i , y, 35 , 20, "", te.tab == 5, this.mariculture,fontRendererObj));
-			i+=i;
+		if(GraveStones.hasMari_Cul){
+			buttonList.add(new GuiTabButton(5, x + offsetX , y, 35 , 20, "", te.tab == 5, ICON_MARICULTURE,fontRendererObj));
+			offsetX +=offsetX;
 		}
 	}
 
@@ -260,7 +216,7 @@ public class GuiGraveContainer extends GuiContainer{
 	protected void actionPerformed(GuiButton button) {
 		super.actionPerformed(button);
 
-		updateInventory(button.id);
+		updateInventory((byte)button.id);
 
 		if(button.id == 0)
 			tabText = "MineCraft";
@@ -283,45 +239,28 @@ public class GuiGraveContainer extends GuiContainer{
 		initGui();
 	}
 
-	private void updateInventory(int i){
+	private void updateInventory(byte i){
 
-		ByteBuf buf = Unpooled.buffer();
-		ByteBufOutputStream out = new ByteBufOutputStream(buf);
-
-		try {
-
-			out.writeInt(ServerPacket.CHANGE_GRAVE);
-			out.writeInt(te.xCoord);
-			out.writeInt(te.yCoord);
-			out.writeInt(te.zCoord);
-			out.writeInt(i);
-
-			GraveStones.channel.sendToServer(new FMLProxyPacket(buf,"gravestone"));
-
-			out.close();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		GraveStones.instance.network.sendToServer(new PacketSwitchSlotLayout(te.xCoord, te.yCoord, te.zCoord, i));
 
 		switch(i){
 		case 0:
-			te.changeGrave(EnumGrave.VANILLA);
+			te.changeSlotLayout(VANILLA);
 			break;
 		case 1:
-			te.changeGrave(EnumGrave.RPGI);
+			te.changeSlotLayout(RPGI);
 			break;
 		case 2:
-			te.changeGrave(EnumGrave.TC);
+			te.changeSlotLayout(TC);
 			break;
 		case 3:
-			te.changeGrave(EnumGrave.BAUBEL);
+			te.changeSlotLayout(BAUBEL);
 			break;
 		case 4:
-			te.changeGrave(EnumGrave.GALACTICRAFT);
+			te.changeSlotLayout(GALACTICRAFT);
 			break;
 		case 5:
-			te.changeGrave(EnumGrave.MARICULTURE);
+			te.changeSlotLayout(MARICULTURE);
 			break;
 		}
 

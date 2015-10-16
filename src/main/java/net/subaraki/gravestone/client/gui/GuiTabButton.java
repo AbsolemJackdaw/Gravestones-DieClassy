@@ -5,7 +5,6 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -36,8 +35,8 @@ public class GuiTabButton extends GuiButton{
 	@Override
 	public void drawButton(Minecraft p_146112_1_, int p_146112_2_, int p_146112_3_)
 	{
-		if (this.visible)
-		{
+		if (this.visible){
+			
 			FontRenderer fontrenderer = p_146112_1_.fontRenderer;
 			p_146112_1_.getTextureManager().bindTexture(button);
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);

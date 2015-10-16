@@ -12,7 +12,6 @@ public class ModelGraveSkeleton extends ModelBase {
 	ModelRenderer Shape22;
 	ModelRenderer Shape23;
 
-
 	public ModelGraveSkeleton() {
 		textureHeight = 64;
 		textureWidth = 64;

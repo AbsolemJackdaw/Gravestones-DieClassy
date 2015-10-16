@@ -1,143 +1,101 @@
 package net.subaraki.gravestone;
 
+import static net.subaraki.gravestone.util.Constants.CLIENT;
+import static net.subaraki.gravestone.util.Constants.MODID;
+import static net.subaraki.gravestone.util.Constants.MOD_NAME;
+import static net.subaraki.gravestone.util.Constants.SERVER;
+import static net.subaraki.gravestone.util.Constants.VERSION;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.subaraki.gravestone.block.BlockGrave;
-import net.subaraki.gravestone.common.ServerProxy;
+import net.subaraki.gravestone.common.CommonProxy;
+import net.subaraki.gravestone.common.network.PacketSwitchSlotLayout;
+import net.subaraki.gravestone.common.network.PacketSyncGraveModel;
 import net.subaraki.gravestone.handler.ConfigHandler;
+import net.subaraki.gravestone.handler.GravestoneEventHandler;
 import net.subaraki.gravestone.handler.GuiHandler;
 import net.subaraki.gravestone.item.ItemDecoGrave;
 import net.subaraki.gravestone.tileentity.TileEntityGravestone;
-import cpw.mods.fml.common.FMLLog;
+import net.subaraki.gravestone.util.GraveUtility;
+import net.subaraki.telepads.util.Constants;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.network.FMLEventChannel;
 import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "gravestonemod", name = "GraveStone", version = "1.7.2")
+@Mod(modid = MODID, name = MOD_NAME, version = VERSION)
 public class GraveStones {
 
 
-	@SidedProxy(serverSide = "net.subaraki.gravestone.proxy.ServerProxy", clientSide = "net.subaraki.gravestone.proxy.ClientProxy")
-	public static ServerProxy proxy;
+	@SidedProxy(serverSide = SERVER, clientSide = CLIENT)
+	public static CommonProxy proxy;
+
+	@Mod.Instance(MODID)
+	public static GraveStones instance;
+
+	/**
+	 * A network channel to be used to handle packets specific to the Telepads mod.
+	 */
+	public SimpleNetworkWrapper network;
 
 	public static Block graveStone;
 
-	public static GraveStones instance;
-
-	public static FMLEventChannel channel;
-
-	public static boolean hasTC = false;
+	public static boolean hasTiCo = false;
 	public static boolean hasRpgI = false;
-	public static boolean hasBaubel = false;
-	public static boolean hasGalacti = false;
-	public static boolean hasMariCulture = false;
+	public static boolean hasBaub = false;
+	public static boolean hasGal_Craft = false;
+	public static boolean hasMari_Cul = false;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 
+		new GraveUtility(); //init instance
+		
+		network = NetworkRegistry.INSTANCE.newSimpleChannel("gravestones");
+		network.registerMessage(PacketSyncGraveModel.PacketSyncGraveModelHandler.class, PacketSyncGraveModel.class, 0, Side.SERVER);
+		network.registerMessage(PacketSwitchSlotLayout.PacketSwitchSlotLayoutHan.class, PacketSwitchSlotLayout.class, 1, Side.SERVER);
+
+		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
+
 		ConfigHandler.instance.loadConfig(event.getSuggestedConfigurationFile());
 
-		instance = this;
-		channel =  NetworkRegistry.INSTANCE.newEventDrivenChannel("gravestone");
-
 		graveStone = new BlockGrave(Material.rock).setBlockName("gravestone").setCreativeTab(CreativeTabs.tabDecorations);
-		
-		GameRegistry.registerTileEntity(TileEntityGravestone.class, "TileEntityGraveStone");
-		
-		GameRegistry.registerBlock(graveStone, ItemDecoGrave.class, "graveStone");
-		
-		GameRegistry.addRecipe(new ItemStack(graveStone,1,1) , new Object[]{
-			"www"," w "," w ",'w', Blocks.cobblestone
-		});
-		
-		GameRegistry.addShapelessRecipe(new ItemStack(graveStone,1,2) , new Object[]{new ItemStack(graveStone,1,1)});
-		GameRegistry.addShapelessRecipe(new ItemStack(graveStone,1,3) , new Object[]{new ItemStack(graveStone,1,2)});
-		GameRegistry.addShapelessRecipe(new ItemStack(graveStone,1,4) , new Object[]{new ItemStack(graveStone,1,3)});
-		GameRegistry.addShapelessRecipe(new ItemStack(graveStone,1,5) , new Object[]{new ItemStack(graveStone,1,4)});
-		GameRegistry.addShapelessRecipe(new ItemStack(graveStone,1,6) , new Object[]{new ItemStack(graveStone,1,5)});
-		GameRegistry.addShapelessRecipe(new ItemStack(graveStone,1,7) , new Object[]{new ItemStack(graveStone,1,6)});
-		GameRegistry.addShapelessRecipe(new ItemStack(graveStone,1,8) , new Object[]{new ItemStack(graveStone,1,7)});
-		GameRegistry.addShapelessRecipe(new ItemStack(graveStone,1,9) , new Object[]{new ItemStack(graveStone,1,8)});
-		GameRegistry.addShapelessRecipe(new ItemStack(graveStone,1,10) , new Object[]{new ItemStack(graveStone,1,9)});
-		GameRegistry.addShapelessRecipe(new ItemStack(graveStone,1,1) , new Object[]{new ItemStack(graveStone,1,10)});
 
+		GameRegistry.registerTileEntity(TileEntityGravestone.class, "TileEntityGraveStone");
+		GameRegistry.registerBlock(graveStone, ItemDecoGrave.class, "graveStone");
+
+		new GravestoneEventHandler();
+
+		proxy.preInit();
 	}
 
 	@EventHandler
 	public void init(FMLInitializationEvent event){
 
-		proxy.registerRendering();
-		new net.subaraki.gravestone.handler.EventHandler();
-		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
+		hasRpgI = GraveUtility.findClass("rpgInventory.RpgInventoryMod", "Rpg Inventory");
+		hasTiCo = GraveUtility.findClass("tconstruct.TConstruct", "Tinkers Construct");
+		hasBaub = GraveUtility.findClass("baubles.Baubles", "Baubel Inventory");
+		hasGal_Craft = GraveUtility.findClass("micdoodle8.mods.galacticraft.core.GalacticraftCore", "GalacticCraft");
+		hasMari_Cul = GraveUtility.findClass("mariculture.Mariculture" , "Mariculture");
 
-		try {
-			Class classRpgI = Class.forName("rpgInventory.RpgInventoryMod");
+	}
 
-			if(classRpgI != null){
-				FMLLog.getLogger().info("GraveStones Detected Rpg Inventory. Inventory Content will be dumped into grave");
-				hasRpgI = true;
-			}
+	/**
+	 * Prints a specified message to the console. If the user has disabled debug messages,
+	 * messages sent through this method will not be logged.
+	 * 
+	 * @param message : The message to send to the console.
+	 */
+	public static void printDebugMessage (String message) {
 
-		} catch (Exception e) {
-		}
-
-		try {
-			Class classTC = Class.forName("tconstruct.TConstruct");
-
-			if(classTC != null){
-				FMLLog.getLogger().info("GraveStones Detected Tinkers Construct. Inventory Content will be dumped into grave");
-				hasTC = true;
-			}
-
-		} catch (Exception e){
-		}
-
-
-		try {
-			Class classTC = Class.forName("baubles.Baubles");
-
-			if(classTC != null){
-				FMLLog.getLogger().info("GraveStones Detected Baubel inventory. Inventory Content will be dumped into grave");
-				hasBaubel = true;
-			}
-
-		} catch (Exception e){
-		}
-		
-		try {
-			Class classTC = Class.forName("micdoodle8.mods.galacticraft.core.GalacticraftCore");
-
-			if(classTC != null){
-				FMLLog.getLogger().info("GraveStones Detected GalacticCraft. Inventory Content will be dumped into grave");
-				hasGalacti = true;
-			}
-
-		} catch (Exception e){
-		}
-		
-		//TODO wait for Galactic Craft to implement iextended properties
-		hasGalacti = false;
-		
-		
-		try {
-			Class classTC = Class.forName("mariculture.Mariculture");
-
-			if(classTC != null){
-				FMLLog.getLogger().info("GraveStones Detected Mariculture. Inventory Content will be dumped into grave");
-				hasMariCulture = true;
-			}
-
-		} catch (Exception e){
-		}
+		if (ConfigHandler.allowDebug)
+			Constants.LOG.info(message);
 	}
 
 }

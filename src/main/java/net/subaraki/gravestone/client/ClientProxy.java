@@ -5,42 +5,32 @@ import net.minecraft.item.Item;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.subaraki.gravestone.GraveStones;
 import net.subaraki.gravestone.client.model.ModelCubeWorld;
+import net.subaraki.gravestone.client.renderer.RenderGrave;
 import net.subaraki.gravestone.client.renderer.TileEntitySpecialRendererGrave;
-import net.subaraki.gravestone.common.ServerProxy;
-import net.subaraki.gravestone.item.RenderGrave;
-import net.subaraki.gravestone.packets.ClientPacket;
+import net.subaraki.gravestone.common.CommonProxy;
+import net.subaraki.gravestone.handler.ConfigHandler;
 import net.subaraki.gravestone.tileentity.TileEntityGravestone;
+import net.subaraki.gravestone.util.Constants;
 
 import org.lwjgl.input.Keyboard;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
 
-public class ClientProxy extends ServerProxy {
+public class ClientProxy extends CommonProxy {
 
-	public static KeyBinding keyGui = new KeyBinding(
-			"Grave Gui", Keyboard.KEY_M, "gravestonemod");
-
-	public static ModelCubeWorld angelStatue;
-	public static ModelCubeWorld barrel;
-
-	public ClientProxy() {
-	}
+	public static KeyBinding keyGui = new KeyBinding("Pick Grave Gui", Keyboard.KEY_M, "gravestonemod");
 
 	@Override
-	public void registerRendering() {
-		ClientRegistry.registerKeyBinding(keyGui);
-		GraveStones.channel.register(new ClientPacket());
+	public void preInit() {
+
+		if(ConfigHandler.enableGravesTroughKey)
+			ClientRegistry.registerKeyBinding(keyGui);
+		
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGravestone.class, new TileEntitySpecialRendererGrave());
 
-		angelStatue = new ModelCubeWorld( ModelCubeWorld.class.getResourceAsStream("/assets/gravestone/models/angelStatue.cub"));
-		barrel = new ModelCubeWorld( ModelCubeWorld.class.getResourceAsStream("/assets/gravestone/models/barrel.cub"));
+		Constants.angelStatue = new ModelCubeWorld(ModelCubeWorld.class.getResourceAsStream("/assets/grave/models/angelStatue.cub"));
+		Constants.barrel = new ModelCubeWorld(ModelCubeWorld.class.getResourceAsStream("/assets/grave/models/barrel.cub"));
 
 		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(GraveStones.graveStone), new RenderGrave());
-	}
-
-
-	@Override
-	public void setCustomNameBoolean(TileEntityGravestone te, boolean b) {
-		te.isDecorativeGrave = b;
 	}
 }

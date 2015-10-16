@@ -5,12 +5,13 @@ import net.minecraft.util.ResourceLocation;
 public class TextureHandler {
 
 
-	private static final ResourceLocation graveTexture = new ResourceLocation("subaraki:grave/gravestone.png");
-	private static final ResourceLocation tombTexture = new ResourceLocation("subaraki:grave/gravezerk.png");
-	private static final ResourceLocation pillarTexture = new ResourceLocation("subaraki:grave/gravepillar.png");
-	private static final ResourceLocation angelTexture = new ResourceLocation("subaraki:grave/Angel.png");
-	private static final ResourceLocation woodTexture = new ResourceLocation("subaraki:grave/gravewood.png");
-	private static final ResourceLocation knightTexture = new ResourceLocation("subaraki:grave/knight.png");
+	private static final String path = "grave:textures/entity/tile/";
+	private static final ResourceLocation graveTexture = new ResourceLocation(path + "grave_stone.png");
+	private static final ResourceLocation tombTexture = new ResourceLocation(path + "grave_zerk.png");
+	private static final ResourceLocation pillarTexture = new ResourceLocation(path + "grave_pillar.png");
+	private static final ResourceLocation angelTexture = new ResourceLocation(path + "grave_angel.png");
+	private static final ResourceLocation woodTexture = new ResourceLocation(path + "grave_wood.png");
+	private static final ResourceLocation knightTexture = new ResourceLocation(path + "grave_knight.png");
 
 	public static ResourceLocation getTextureFromMeta(int meta) {
 

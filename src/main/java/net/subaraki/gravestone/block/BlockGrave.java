@@ -42,10 +42,7 @@ public class BlockGrave extends Block{
 	}
 
 	@Override
-	public boolean onBlockActivated(World world, int x,
-			int y, int z, EntityPlayer player,
-			int p_149727_6_, float p_149727_7_, float p_149727_8_,
-			float p_149727_9_) {
+	public boolean onBlockActivated(World world, int x,int y, int z, EntityPlayer player, int meta, float p_149727_7_, float p_149727_8_, float p_149727_9_) {
 
 		TileEntityGravestone te = (TileEntityGravestone) world.getTileEntity(x, y, z);
 
@@ -81,32 +78,27 @@ public class BlockGrave extends Block{
 
 	@Override
 	public float getExplosionResistance(Entity par1Entity) {
-		return 18000000F;
+		return Float.MAX_VALUE;
 	}
 
 	@Override
-	public void onBlockDestroyedByExplosion(World world, int x,
-			int y, int z, Explosion p_149723_5_) {
+	public void onBlockDestroyedByExplosion(World world, int x, int y, int z, Explosion p_149723_5_) {
 
 		world.removeTileEntity(x, y, z);
 	}
 
 	@Override
-	public void onBlockClicked(World world, int x,
-			int y, int z, EntityPlayer player) {
+	public void onBlockClicked(World world, int x, int y, int z, EntityPlayer player) {
 
 		if(((TileEntityGravestone)world.getTileEntity(x, y, z)).hasItems) {
 			setBlockUnbreakable();
 		} else {
 			setHardness(5.0f);
 		}
-
-		System.out.println(blockHardness);
 	}
 
 	@Override
-	public void breakBlock(World world, int x, int y,
-			int z, Block block, int a) {
+	public void breakBlock(World world, int x, int y, int z, Block block, int a) {
 
 		TileEntityGravestone te = (TileEntityGravestone)world.getTileEntity(x,y,z);
 

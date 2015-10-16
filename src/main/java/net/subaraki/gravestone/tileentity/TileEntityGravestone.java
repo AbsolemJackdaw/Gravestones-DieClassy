@@ -1,5 +1,12 @@
 package net.subaraki.gravestone.tileentity;
 
+import static net.subaraki.gravestone.util.Constants.BAUBEL;
+import static net.subaraki.gravestone.util.Constants.GALACTICRAFT;
+import static net.subaraki.gravestone.util.Constants.MARICULTURE;
+import static net.subaraki.gravestone.util.Constants.RPGI;
+import static net.subaraki.gravestone.util.Constants.TC;
+import static net.subaraki.gravestone.util.Constants.VANILLA;
+
 import java.util.Random;
 
 import net.minecraft.entity.Entity;
@@ -32,7 +39,8 @@ public class TileEntityGravestone extends TileEntity implements IInventory
 	 * 82-87 is galacticraft
 	 * 
 	 * 88-90 is mariculture
-	 * */
+	 */
+	
 	public ItemStack[] list = new ItemStack[128];
 
 	/**slots in the container shown*/
@@ -69,7 +77,6 @@ public class TileEntityGravestone extends TileEntity implements IInventory
 		this.playername = playername;
 		modelType = modelid;
 	}
-
 
 	@Override
 	public int getSizeInventory()
@@ -186,7 +193,7 @@ public class TileEntityGravestone extends TileEntity implements IInventory
 		otherPlayerHasTakenItemStack = nbt.getBoolean("isLooted");
 
 		isDecorativeGrave = nbt.getBoolean("decoGrave");
-		
+
 		NBTTagList tagList = nbt.getTagList("Items", Constants.NBT.TAG_COMPOUND);
 		for (int i = 0; i < tagList.tagCount(); i++) {
 			NBTTagCompound tag = tagList.getCompoundTagAt(i);
@@ -218,7 +225,7 @@ public class TileEntityGravestone extends TileEntity implements IInventory
 		par1NBTTagCompound.setFloat("rotation", ModelRotation);
 		par1NBTTagCompound.setBoolean("isLooted", otherPlayerHasTakenItemStack);
 		par1NBTTagCompound.setBoolean("decoGrave", isDecorativeGrave);
-		
+
 		NBTTagList nbttaglist = new NBTTagList();
 
 		for (int i = 0; i < this.slots.length; ++i)
@@ -365,13 +372,14 @@ public class TileEntityGravestone extends TileEntity implements IInventory
 	}
 
 
-	public void changeGrave(EnumGrave num){
+	public void changeSlotLayout(byte b){
 
 		for(int i = 0; i < slots.length; i ++){
 			slots[i] = null;
 		}
 
-		switch(num){
+		switch(b){
+
 		case VANILLA:
 
 			for(int i = 0; i < slots.length; i ++){
@@ -401,33 +409,23 @@ public class TileEntityGravestone extends TileEntity implements IInventory
 				slots[i] = list[i+78];
 			}
 			break;
-			
+
 		case GALACTICRAFT:
 			for(int i = 0; i < 6; i ++){
 				slots[i] = list[i+82];
 			}
 			break;
-			
+
 		case MARICULTURE:
 			for(int i = 0; i < 3; i ++){
 				slots[i] = list[i+88];
 			}
 			break;
-			
+
 		default:
 			break;
 
 		}
-
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-	}
-
-	public enum EnumGrave{
-		VANILLA,
-		RPGI,
-		TC,
-		BAUBEL,
-		GALACTICRAFT,
-		MARICULTURE
 	}
 }

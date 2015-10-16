@@ -3,8 +3,8 @@ package net.subaraki.gravestone.handler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.subaraki.gravestone.client.gui.GuiGrave;
 import net.subaraki.gravestone.client.gui.GuiGraveContainer;
+import net.subaraki.gravestone.client.gui.GuiPickGrave;
 import net.subaraki.gravestone.inventory.ContainerGrave;
 import net.subaraki.gravestone.tileentity.TileEntityGravestone;
 import cpw.mods.fml.common.network.IGuiHandler;
@@ -28,7 +28,7 @@ public class GuiHandler implements IGuiHandler {
 		case 0 :
 			return new GuiGraveContainer(player, (TileEntityGravestone) te);
 		case 1:
-			return new GuiGrave(player);
+			return new GuiPickGrave(player);
 		}
 
 		return new GuiGraveContainer(player, (TileEntityGravestone) te);

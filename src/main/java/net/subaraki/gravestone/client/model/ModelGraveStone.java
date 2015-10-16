@@ -5,7 +5,6 @@ import net.minecraft.entity.Entity;
 
 public class ModelGraveStone extends ModelBase
 {
-	//fields
 
 	public ModelRenderer Shape14;
 	public ModelRenderer Shape15;
@@ -14,7 +13,6 @@ public class ModelGraveStone extends ModelBase
 	public ModelRenderer Base1;
 	public ModelRenderer Base2;
 	public ModelRenderer Base3;
-
 
 	public ModelGraveStone()
 	{
