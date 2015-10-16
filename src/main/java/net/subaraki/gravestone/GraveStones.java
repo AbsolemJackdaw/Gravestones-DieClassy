@@ -11,14 +11,18 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.subaraki.gravestone.block.BlockGrave;
 import net.subaraki.gravestone.common.CommonProxy;
 import net.subaraki.gravestone.common.network.PacketSwitchSlotLayout;
+import net.subaraki.gravestone.common.network.PacketSwitchSlotLayout.PacketSwitchSlotLayoutHandler;
 import net.subaraki.gravestone.common.network.PacketSyncGraveModel;
+import net.subaraki.gravestone.common.network.PacketSyncGraveModel.PacketSyncGraveModelHandler;
+import net.subaraki.gravestone.common.network.PacketSyncModelToClient;
+import net.subaraki.gravestone.common.network.PacketSyncModelToClient.PacketSyncModelToClientHandler;
 import net.subaraki.gravestone.handler.ConfigHandler;
 import net.subaraki.gravestone.handler.GravestoneEventHandler;
 import net.subaraki.gravestone.handler.GuiHandler;
 import net.subaraki.gravestone.item.ItemDecoGrave;
 import net.subaraki.gravestone.tileentity.TileEntityGravestone;
+import net.subaraki.gravestone.util.Constants;
 import net.subaraki.gravestone.util.GraveUtility;
-import net.subaraki.telepads.util.Constants;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.SidedProxy;
@@ -58,8 +62,9 @@ public class GraveStones {
 		new GraveUtility(); //init instance
 		
 		network = NetworkRegistry.INSTANCE.newSimpleChannel("gravestones");
-		network.registerMessage(PacketSyncGraveModel.PacketSyncGraveModelHandler.class, PacketSyncGraveModel.class, 0, Side.SERVER);
-		network.registerMessage(PacketSwitchSlotLayout.PacketSwitchSlotLayoutHan.class, PacketSwitchSlotLayout.class, 1, Side.SERVER);
+		network.registerMessage(PacketSyncGraveModelHandler.class, PacketSyncGraveModel.class, 0, Side.SERVER);
+		network.registerMessage(PacketSwitchSlotLayoutHandler.class, PacketSwitchSlotLayout.class, 1, Side.SERVER);
+		network.registerMessage(PacketSyncModelToClientHandler.class, PacketSyncModelToClient.class, 2, Side.CLIENT);
 
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
 

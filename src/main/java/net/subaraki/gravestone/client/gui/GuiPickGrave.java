@@ -148,7 +148,7 @@ public class GuiPickGrave extends GuiScreen{
 		render = id;
 		PlayerGraveData.get(player).setGraveModel(id);
 		
-		GraveStones.instance.network.sendToServer(new PacketSyncGraveModel(render));
+		GraveStones.instance.network.sendToServer(new PacketSyncGraveModel(id));
 	}
 
 	@Override

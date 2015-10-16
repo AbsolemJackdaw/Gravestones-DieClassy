@@ -9,10 +9,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.Clone;
 import net.subaraki.gravestone.GraveStones;
@@ -36,8 +36,15 @@ public class GravestoneEventHandler {
 	}
 
 	@SubscribeEvent
+    public void onEntityJoinWorld (EntityJoinWorldEvent event) {
+        
+        if (event.entity instanceof EntityPlayer && !event.entity.worldObj.isRemote && PlayerGraveData.get(((EntityPlayer)event.entity))!=null)
+        	PlayerGraveData.get((EntityPlayer) event.entity).sync();
+    }
+	
+	@SubscribeEvent
 	public void onEntityConstruction(EntityConstructing event) {
-		if ((event.entity instanceof EntityPlayer)&& (PlayerGraveData.get((EntityPlayer) event.entity) == null)) {
+		if ((event.entity instanceof EntityPlayer) && (PlayerGraveData.get((EntityPlayer) event.entity) == null)) {
 			PlayerGraveData.register((EntityPlayer) event.entity);
 		}
 	}
@@ -57,15 +64,24 @@ public class GravestoneEventHandler {
 			}
 	}
 
+//	@SubscribeEvent
+//	public void onClone(Clone evt){
+//		NBTTagCompound tag = new NBTTagCompound();
+//
+////		PlayerGraveData.get(evt.entityPlayer).saveNBTData(tag);
+////
+////		PlayerGraveData.get(evt.original).loadNBTData(tag);
+//	}
+
 	@SubscribeEvent
-	public void onClone(Clone evt){
-		NBTTagCompound tag = new NBTTagCompound();
+	public void onCloneEvent(Clone event){
+		PlayerGraveData dead = PlayerGraveData.get(event.original);
+		PlayerGraveData clone = PlayerGraveData.get(event.entityPlayer);
+		
+		clone.setGraveModel(dead.getGraveModel());
 
-		PlayerGraveData.get(evt.entityPlayer).saveNBTData(tag);
-
-		PlayerGraveData.get(evt.original).loadNBTData(tag);
 	}
-
+	
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onDeathEvent(LivingDeathEvent evt){
 
@@ -137,8 +153,8 @@ public class GravestoneEventHandler {
 
 
 	private void placeGrave(EntityPlayer player, int x, int y, int z){
+		
 		player.worldObj.setBlock(x, y+1, z, GraveStones.graveStone);
-
 
 		TileEntityGravestone te = new TileEntityGravestone();
 		InventoryPlayer inv = player.inventory;

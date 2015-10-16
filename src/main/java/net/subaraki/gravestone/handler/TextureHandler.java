@@ -9,7 +9,6 @@ public class TextureHandler {
 	private static final ResourceLocation graveTexture = new ResourceLocation(path + "grave_stone.png");
 	private static final ResourceLocation tombTexture = new ResourceLocation(path + "grave_zerk.png");
 	private static final ResourceLocation pillarTexture = new ResourceLocation(path + "grave_pillar.png");
-	private static final ResourceLocation angelTexture = new ResourceLocation(path + "grave_angel.png");
 	private static final ResourceLocation woodTexture = new ResourceLocation(path + "grave_wood.png");
 	private static final ResourceLocation knightTexture = new ResourceLocation(path + "grave_knight.png");
 
@@ -34,13 +33,10 @@ public class TextureHandler {
 			resourcelocation = pillarTexture;
 			break;
 		case 6:
-			resourcelocation =  woodTexture;
+			resourcelocation = woodTexture;
 			break;
 		case 7:
 			resourcelocation = pillarTexture;
-			break;
-		case 8:
-			resourcelocation = angelTexture;
 			break;
 		case 9:
 			resourcelocation = knightTexture;

@@ -57,7 +57,7 @@ public class PacketSwitchSlotLayout implements IMessage{
 	}
 
 
-	public static class PacketSwitchSlotLayoutHan implements IMessageHandler<PacketSwitchSlotLayout, IMessage>{
+	public static class PacketSwitchSlotLayoutHandler implements IMessageHandler<PacketSwitchSlotLayout, IMessage>{
 
 		@Override
 		public IMessage onMessage(PacketSwitchSlotLayout message, MessageContext ctx) {

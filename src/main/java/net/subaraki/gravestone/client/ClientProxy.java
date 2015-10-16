@@ -1,6 +1,8 @@
 package net.subaraki.gravestone.client;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.subaraki.gravestone.GraveStones;
@@ -32,5 +34,9 @@ public class ClientProxy extends CommonProxy {
 		Constants.barrel = new ModelCubeWorld(ModelCubeWorld.class.getResourceAsStream("/assets/grave/models/barrel.cub"));
 
 		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(GraveStones.graveStone), new RenderGrave());
+	}
+	
+	public EntityPlayer getClientPlayer(){
+		return Minecraft.getMinecraft().thePlayer;
 	}
 }

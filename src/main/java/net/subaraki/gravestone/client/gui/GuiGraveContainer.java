@@ -1,18 +1,6 @@
 package net.subaraki.gravestone.client.gui;
 
-import static net.subaraki.gravestone.util.Constants.BAUBEL;
-import static net.subaraki.gravestone.util.Constants.GALACTICRAFT;
-import static net.subaraki.gravestone.util.Constants.ICON_BAUBLES;
-import static net.subaraki.gravestone.util.Constants.ICON_GALACTICRAFT;
-import static net.subaraki.gravestone.util.Constants.ICON_MARICULTURE;
-import static net.subaraki.gravestone.util.Constants.ICON_RPGI;
-import static net.subaraki.gravestone.util.Constants.ICON_TCON;
-import static net.subaraki.gravestone.util.Constants.ICON_VANILLA;
-import static net.subaraki.gravestone.util.Constants.MARICULTURE;
-import static net.subaraki.gravestone.util.Constants.RPGI;
-import static net.subaraki.gravestone.util.Constants.TC;
-import static net.subaraki.gravestone.util.Constants.VANILLA;
-import net.minecraft.client.entity.AbstractClientPlayer;
+import static net.subaraki.gravestone.util.Constants.*;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
