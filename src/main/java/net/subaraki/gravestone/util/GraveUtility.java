@@ -4,6 +4,8 @@ import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.subaraki.gravestone.GraveStones;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class GraveUtility {
 
@@ -33,10 +35,14 @@ public class GraveUtility {
 		return false;
 	}
 
-	public ResourceLocation SKIN_ABSTRACT_PLAYER = AbstractClientPlayer.locationStevePng;
+	public ResourceLocation SKIN_ABSTRACT_PLAYER = null;
 	public ResourceLocation SKIN_STEVE = new ResourceLocation("textures/entity/steve.png");
 
+	@SideOnly(Side.CLIENT)
 	public ResourceLocation processPlayerTexture(EntityPlayer player){
+		if(SKIN_ABSTRACT_PLAYER == null)
+			SKIN_ABSTRACT_PLAYER = AbstractClientPlayer.locationStevePng;
+
 		try{
 			if ((player != null) && (player.getCommandSenderName().length() > 0)){
 
@@ -52,7 +58,11 @@ public class GraveUtility {
 
 	}
 
+	@SideOnly(Side.CLIENT)
 	public ResourceLocation processPlayerTexture(String playername){
+		if(SKIN_ABSTRACT_PLAYER == null)
+			SKIN_ABSTRACT_PLAYER = AbstractClientPlayer.locationStevePng;
+
 		try{		
 			if ((playername != null) && (playername.length() > 1)){
 				SKIN_ABSTRACT_PLAYER = AbstractClientPlayer.getLocationSkin(playername);
@@ -63,7 +73,7 @@ public class GraveUtility {
 		}catch(Exception e){
 
 		}
-		
+
 		return SKIN_ABSTRACT_PLAYER;
 	}
 }
