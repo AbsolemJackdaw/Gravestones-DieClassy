@@ -14,7 +14,7 @@ public class PlayerGraveData implements IExtendedEntityProperties {
 	EntityPlayer player;
 	public static final String PROPS = "graveData";
 
-	private int graveID;
+	private int graveID = 1;
 
 	public PlayerGraveData(EntityPlayer player) {
 		this.player = player;
