@@ -7,6 +7,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
@@ -36,12 +37,12 @@ public class GravestoneEventHandler {
 	}
 
 	@SubscribeEvent
-    public void onEntityJoinWorld (EntityJoinWorldEvent event) {
-        
-        if (event.entity instanceof EntityPlayer && !event.entity.worldObj.isRemote && PlayerGraveData.get(((EntityPlayer)event.entity))!=null)
-        	PlayerGraveData.get((EntityPlayer) event.entity).sync();
-    }
-	
+	public void onEntityJoinWorld (EntityJoinWorldEvent event) {
+
+		if (event.entity instanceof EntityPlayer && !event.entity.worldObj.isRemote && PlayerGraveData.get(((EntityPlayer)event.entity))!=null)
+			PlayerGraveData.get((EntityPlayer) event.entity).sync();
+	}
+
 	@SubscribeEvent
 	public void onEntityConstruction(EntityConstructing event) {
 		if ((event.entity instanceof EntityPlayer) && (PlayerGraveData.get((EntityPlayer) event.entity) == null)) {
@@ -64,24 +65,15 @@ public class GravestoneEventHandler {
 			}
 	}
 
-//	@SubscribeEvent
-//	public void onClone(Clone evt){
-//		NBTTagCompound tag = new NBTTagCompound();
-//
-////		PlayerGraveData.get(evt.entityPlayer).saveNBTData(tag);
-////
-////		PlayerGraveData.get(evt.original).loadNBTData(tag);
-//	}
-
 	@SubscribeEvent
 	public void onCloneEvent(Clone event){
 		PlayerGraveData dead = PlayerGraveData.get(event.original);
 		PlayerGraveData clone = PlayerGraveData.get(event.entityPlayer);
-		
+
 		clone.setGraveModel(dead.getGraveModel());
 
 	}
-	
+
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onDeathEvent(LivingDeathEvent evt){
 
@@ -113,6 +105,7 @@ public class GravestoneEventHandler {
 			int t = Math.max(X,Z);
 			int maxI = t*t;
 			boolean flag = false;
+			boolean liquid = false;
 
 			for (int i=0; i < maxI; i++){
 
@@ -123,8 +116,14 @@ public class GravestoneEventHandler {
 						y2++;
 					}
 
+					if(player.worldObj.getBlock(x+x2, y+y2, z+z2).getMaterial().isLiquid()){
+						GraveStones.printDebugMessage("You were standing in liquid !");
+						y2--;
+						liquid = true;
+					}
+
 					if(player.worldObj.getBlock(x+x2, y+y2, z+z2).getMaterial().isSolid()){
-						if(player.worldObj.getBlock(x+x2, y+1+y2, z+z2).getMaterial().equals(Material.air)){
+						if(player.worldObj.getBlock(x+x2, y+1+y2, z+z2).getMaterial().equals(Material.air) || liquid){
 							GraveStones.printDebugMessage("Potential grave at " + (x+x2) +" " + (y+y2)+ " "+ (z+z2));
 
 							placeGrave(player, x+x2, y+y2, z+z2);
@@ -138,22 +137,33 @@ public class GravestoneEventHandler {
 				if( (x2 == z2) || ((x2 < 0) && (x2 == -z2)) || ((x2 > 0) && (x2 == (1-z2)))) {
 					t=dx; dx=-dz; dz=t;
 				}
+
 				x2+=dx; z2+=dz;
 			}
 
-			if(!flag){
-				TileEntityGravestone te = new TileEntityGravestone();
-				te.modelType = PlayerGraveData.get(player).getGraveModel();
+			if(!flag && liquid){
 
-				player.worldObj.setTileEntity(x, y, z, te);
-				player.worldObj.markBlockForUpdate(x, y, z);
+				int y2 =0;
+				while(!player.worldObj.getBlock(x, y+1 +y2, z).getMaterial().equals(Material.air)){
+					y2++;
+				}
+
+				if(player.worldObj.getBlock(x, y+y2, z).getMaterial().isLiquid()){
+					if(player.worldObj.getBlock(x, y+1+y2, z).getMaterial().equals(Material.air))
+						player.worldObj.setBlock(x, y+y2, z, Blocks.cobblestone);
+
+					placeGrave(player, x, y+y2, z);
+				}
+			}
+			else if(!flag){
+				placeGrave(player, x, y, z);
 			}
 		}
 	}
 
 
 	private void placeGrave(EntityPlayer player, int x, int y, int z){
-		
+
 		player.worldObj.setBlock(x, y+1, z, GraveStones.graveStone);
 
 		TileEntityGravestone te = new TileEntityGravestone();
@@ -163,7 +173,7 @@ public class GravestoneEventHandler {
 		int max = 9;
 
 		if(!ConfigHandler.enableGravesTroughKey)
-			graveID = ConfigHandler.graveOrder[Math.max((player.experienceLevel / ConfigHandler.graveLevel), max)];
+			graveID = ConfigHandler.graveOrder[Math.min((player.experienceLevel / ConfigHandler.graveLevel), max)];
 
 		te.setGraveData(player.getCommandSenderName(), graveID);
 
@@ -192,37 +202,61 @@ public class GravestoneEventHandler {
 		if(GraveStones.hasRpgI){
 			IInventory inv = accesInventoryContents(player, "get", "rpgInventory.gui.rpginv.PlayerRpgInventory", "Rpg Inventory");
 
-			for(int i = 0; i < 7; i ++){
-				ItemStack is = inv.getStackInSlot(i);
-				te.list[i + 40] = is;
-				inv.setInventorySlotContents(i, null);
-			}
+			if(inv != null)
+				for(int i = 0; i < 7; i ++){
+					ItemStack is = inv.getStackInSlot(i);
+					te.list[i + 40] = is;
+					inv.setInventorySlotContents(i, null);
+				}
+			else
+				GraveStones.printDebugMessage("GraveStones Mod couldn't connect to Rpg Inventory. Have these classes been modified ? Report to mod Author pleases.");
+
 		}
 
 		if(GraveStones.hasTiCo){
-			IInventory sack = accesInventoryContents(player, "get",  "tconstruct.util.player.TPlayerStats", "knapsack", "Tinkers Construct");
-			IInventory inv = accesInventoryContents(player, "get",  "tconstruct.util.player.TPlayerStats", "armor", "Tinkers Construct");
+			IInventory sack = accesInventoryContents(player, "getKnapsackInventory ",  "tconstruct.armor.player.TPlayerStats", "Tinkers Construct");
+			IInventory inv = accesInventoryContents(player, "getAccessoryInventory ",  "tconstruct.armor.player.TPlayerStats", "Tinkers Construct");
 
-			for(int i = 0; i < 27; i ++){
-				ItemStack is = sack.getStackInSlot(i);
-				te.list[i + 47] = is;
-				sack.setInventorySlotContents(i, null);
-			}
+			if(sack != null)
+				for(int i = 0; i < 27; i ++){
+					ItemStack is = sack.getStackInSlot(i);
+					te.list[i + 47] = is;
+					sack.setInventorySlotContents(i, null);
+				}
+			else
+				GraveStones.printDebugMessage("GraveStones Mod couldn't connect to Tinkers Construct's Knapsack. Have these classes been modified ? Report to mod Author pleases.");
 
-			for(int i = 0; i < 4; i ++){
-				ItemStack is = inv.getStackInSlot(i);
-				te.list[i + 74] = is;
-				inv.setInventorySlotContents(i, null);
-			}
+			if(inv != null)
+				for(int i = 0; i < 7; i ++){ //needs to be 7
+					ItemStack is = inv.getStackInSlot(i);
+					te.list[i + 74] = is;
+					inv.setInventorySlotContents(i, null);
+				}
+			else
+				GraveStones.printDebugMessage("GraveStones Mod couldn't connect to Tinkers Construct's Armor. Have these classes been modified ? Report to mod Author pleases.");
+
 		}
 
 		if(GraveStones.hasBaub){
 			IInventory inv = accesInventoryContents(player, "getPlayerBaubles",  "baubles.common.lib.PlayerHandler", "Baubles");
 
-			for(int i = 0; i < 4; i ++){
-				ItemStack is = inv.getStackInSlot(i);
-				te.list[i + 78] = is;
-				inv.setInventorySlotContents(i, null);
+			if(inv != null)
+				for(int i = 0; i < 4; i ++){
+					ItemStack is = inv.getStackInSlot(i);
+					te.list[i + 81] = is;
+					inv.setInventorySlotContents(i, null);
+				}
+			else
+				GraveStones.printDebugMessage("GraveStones Mod couldn't connect to Baubles. Have these classes been modified ? Report to mod Author pleases.");
+
+			//sync to client
+			try{
+				Class<?> clazz = Class.forName("baubles.common.container.InventoryBaubles");
+				Method m = clazz.getDeclaredMethod("syncSlotToClients", Integer.class);
+				for(int i = 0; i < 7 ; i++)
+					m.invoke(null, i);
+			}catch(Exception e){
+				GraveStones.printDebugMessage("Gravestones was not able to acces Baubles' save mechanicism. Has their class layout changed ? Report to mod author please.");
 			}
 		}
 
@@ -231,7 +265,7 @@ public class GravestoneEventHandler {
 
 			for(int i = 0; i < 10; i ++){
 				ItemStack is = inv[i];
-				te.list[i + 82] = is;
+				te.list[i + 85] = is;
 				inv[i] = null;
 			}
 		}
@@ -240,7 +274,7 @@ public class GravestoneEventHandler {
 			ItemStack[] inv = accesInventoryContentsStacks(player, "getInventory", "mariculture.magic.MirrorHelper", "Mariculture");
 			for(int i = 0; i < 3; i ++){
 				ItemStack is = inv[i];
-				te.list[i + 88] = is;
+				te.list[i + 95] = is;
 			}
 
 			//the save method is static
