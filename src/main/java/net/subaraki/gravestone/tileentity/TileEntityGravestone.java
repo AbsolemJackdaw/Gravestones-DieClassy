@@ -443,6 +443,7 @@ public class TileEntityGravestone extends TileEntity implements IInventory
 	}
 
 	private int getListSlotID(int slot){
+		
 		return tab == 0 ? slot :
 			tab == 1 ? slot + 40 :
 				tab == 2 ? slot + 47 :
