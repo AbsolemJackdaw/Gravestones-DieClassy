@@ -1,6 +1,7 @@
 package net.subaraki.gravestone.handler;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import net.minecraft.block.material.Material;
@@ -250,14 +251,32 @@ public class GravestoneEventHandler {
 				GraveStones.printDebugMessage("GraveStones Mod couldn't connect to Baubles. Have these classes been modified ? Report to mod Author pleases.");
 
 			//sync to client
-			try{
+			try {
 				Class<?> clazz = Class.forName("baubles.common.container.InventoryBaubles");
-				Method m = clazz.getDeclaredMethod("syncSlotToClients", Integer.class);
+
+				Method m = clazz.getDeclaredMethod("syncSlotToClients", int.class);
+
 				for(int i = 0; i < 7 ; i++)
-					m.invoke(null, i);
-			}catch(Exception e){
-				GraveStones.printDebugMessage("Gravestones was not able to acces Baubles' save mechanicism. Has their class layout changed ? Report to mod author please.");
+					m.invoke(inv, i); //not a static method, so it needs an instance of a class to call upon !
+
+				GraveStones.printDebugMessage("Gravestones was able to access Baubles' save mechanicism ! This print is proof that it got saved correctly.");
+
+				//all catch clauses for debug sake
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
 			}
+
+//			GraveStones.printDebugMessage("Gravestones was not able to acces Baubles' save mechanicism. Has their class layout changed ? Report to mod author please.");
 		}
 
 		if(GraveStones.hasGal_Craft){
