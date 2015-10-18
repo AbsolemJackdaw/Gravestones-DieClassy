@@ -19,6 +19,7 @@ import net.subaraki.gravestone.common.network.PacketSyncModelToClient.PacketSync
 import net.subaraki.gravestone.handler.ConfigHandler;
 import net.subaraki.gravestone.handler.GravestoneEventHandler;
 import net.subaraki.gravestone.handler.GuiHandler;
+import net.subaraki.gravestone.handler.RecipeHandler;
 import net.subaraki.gravestone.item.ItemDecoGrave;
 import net.subaraki.gravestone.tileentity.TileEntityGravestone;
 import net.subaraki.gravestone.util.Constants;
@@ -60,7 +61,7 @@ public class GraveStones {
 	public void preInit(FMLPreInitializationEvent event) {
 
 		new GraveUtility(); //init instance
-		
+
 		network = NetworkRegistry.INSTANCE.newSimpleChannel("gravestones");
 		network.registerMessage(PacketSyncGraveModelHandler.class, PacketSyncGraveModel.class, 0, Side.SERVER);
 		network.registerMessage(PacketSwitchSlotLayoutHandler.class, PacketSwitchSlotLayout.class, 1, Side.SERVER);
@@ -75,6 +76,8 @@ public class GraveStones {
 		GameRegistry.registerTileEntity(TileEntityGravestone.class, "TileEntityGraveStone");
 		GameRegistry.registerBlock(graveStone, ItemDecoGrave.class, "graveStone");
 
+		RecipeHandler.registerBlockRecipe();
+
 		new GravestoneEventHandler();
 
 		proxy.preInit();
@@ -85,7 +88,7 @@ public class GraveStones {
 
 		hasRpgI = GraveUtility.findClass("rpgInventory.RpgInventoryMod", "Rpg Inventory");
 		hasTiCo = GraveUtility.findClass("tconstruct.TConstruct", "Tinkers Construct");
-		hasBaub = GraveUtility.findClass("baubles.Baubles", "Baubel Inventory");
+		hasBaub = GraveUtility.findClass("baubles.common.Baubles", "Baubel Inventory");
 		hasGal_Craft = GraveUtility.findClass("micdoodle8.mods.galacticraft.core.GalacticraftCore", "GalacticCraft");
 		hasMari_Cul = GraveUtility.findClass("mariculture.Mariculture" , "Mariculture");
 
