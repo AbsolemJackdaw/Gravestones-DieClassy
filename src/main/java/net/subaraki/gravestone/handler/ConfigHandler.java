@@ -13,7 +13,7 @@ public class ConfigHandler {
 	public static int graveLevel = 5;
 	public static int[] graveOrder = new int[]{6,1,2,3,7,4,5,10,9,8};
 	
-	public static boolean allowDebug = false;
+	public static boolean allowDebug = true;
 	
 	public void loadConfig(File file)
 	{
