@@ -96,8 +96,10 @@ public class TileEntityGravestone extends TileEntity implements IInventory
 	{
 		int slotID = getListSlotID(slot);
 
-		if(slotID == 0)
-			GraveStones.printDebugMessage("tab id was not recognized ! This is a bug or inimplemented feature. please report to mod author !");
+		if(slotID == -1){
+			GraveStones.printDebugMessage("Tab id was not recognized ! This is a bug or inimplemented feature. please report to mod author !");
+			GraveStones.printDebugMessage("Tried getting content of tab #" + tab + " this should be the " + this.modNameForTab(tab) + " inventory");
+		}
 
 		this.slots[slot] = par2ItemStack;
 		this.list[slotID] = par2ItemStack;
@@ -112,8 +114,12 @@ public class TileEntityGravestone extends TileEntity implements IInventory
 	{
 		int slotID = getListSlotID(slot);
 
-		if(slotID == 0)
-			GraveStones.printDebugMessage("tab id was not recognized ! This is a bug or inimplemented feature. please report to mod author !");
+		if(slotID == -1){
+			GraveStones.printDebugMessage("Tab id was not recognized ! This is a bug or inimplemented feature. please report to mod author !");
+			GraveStones.printDebugMessage("Tried getting content of tab #" + tab + " this should be the " + this.modNameForTab(tab) + " inventory");
+		}
+
+		GraveStones.printDebugMessage("");
 
 		if (this.slots[slot] != null)
 		{
@@ -440,9 +446,33 @@ public class TileEntityGravestone extends TileEntity implements IInventory
 		return tab == 0 ? slot :
 			tab == 1 ? slot + 40 :
 				tab == 2 ? slot + 47 :
-					tab == 3 ? slot + 74 : 
-						tab == 4 ? slot + 81 : 
-							tab == 5 ? slot +85 : 
-								tab == 6 ? slot + 95 : 0;
+					tab == 3 ? slot + 81 : 
+						tab == 4 ? slot +85 : 
+							tab == 5 ? slot + 95 : -1;
+	}
+	
+	private String modNameForTab(int tabId){
+		
+		String name = null;
+		
+		if(tabId == 0)
+			name = "MineCraft";
+
+		if(tabId == 1)
+			name = "Rpg Inventory";
+
+		if(tabId == 2)
+			name = "Tinkers Construct";
+
+		if(tabId == 3)
+			name = "Baubel Inventory";
+
+		if(tabId == 4)
+			name = "Galacticraft";
+
+		if(tabId == 5)
+			name = "Mariculture";
+		
+		return name;
 	}
 }
