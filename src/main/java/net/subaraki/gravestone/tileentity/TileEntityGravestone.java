@@ -23,24 +23,25 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.subaraki.gravestone.GraveStones;
 
 public class TileEntityGravestone extends TileEntity implements IInventory
 {
 
 	/**all saved itemstacks
 	 *
-	 * 0-39  are vanilla
-	 * 40-46 is rpg invententory
-	 * 47-73 is tconstruct knapsack
-	 * 74-77 is tconstruct armor
+	 * 0 -39  are vanilla (40 slots)
+	 * 40-46 is rpg invententory (7 slots)
+	 * 47-73 is tconstruct knapsack (27 slots)
+	 * 74-80 is tconstruct armor (7 slots)
 	 * 
-	 * 78 81 is baubel items
+	 * 81 84 is baubel items (4 slots)
 	 * 
-	 * 82-87 is galacticraft
+	 * 85-94 is galacticraft (10 slots)
 	 * 
-	 * 88-90 is mariculture
+	 * 95-97s is mariculture (3 slots)
 	 */
-	
+
 	public ItemStack[] list = new ItemStack[128];
 
 	/**slots in the container shown*/
@@ -93,7 +94,10 @@ public class TileEntityGravestone extends TileEntity implements IInventory
 	@Override
 	public void setInventorySlotContents(int slot, ItemStack par2ItemStack)
 	{
-		int slotID = tab == 0 ? slot : tab == 1 ? slot + 40 : slot + 47;
+		int slotID = getListSlotID(slot);
+
+		if(slotID == 0)
+			GraveStones.printDebugMessage("tab id was not recognized ! This is a bug or inimplemented feature. please report to mod author !");
 
 		this.slots[slot] = par2ItemStack;
 		this.list[slotID] = par2ItemStack;
@@ -106,7 +110,10 @@ public class TileEntityGravestone extends TileEntity implements IInventory
 	@Override
 	public ItemStack decrStackSize(int slot, int ammount)
 	{
-		int slotID = tab == 0 ? slot : tab == 1 ? slot + 40 : slot + 47;
+		int slotID = getListSlotID(slot);
+
+		if(slotID == 0)
+			GraveStones.printDebugMessage("tab id was not recognized ! This is a bug or inimplemented feature. please report to mod author !");
 
 		if (this.slots[slot] != null)
 		{
@@ -399,26 +406,26 @@ public class TileEntityGravestone extends TileEntity implements IInventory
 			for(int i = 0; i < 27; i ++){
 				slots[i] = list[i+47];
 			}
-			for(int i = 0; i < 4; i ++){
+			for(int i = 0; i < 7; i ++){
 				slots[i+27] = list[i+74];
 			}
 			break;
 
 		case BAUBEL:
 			for(int i = 0; i < 4; i ++){
-				slots[i] = list[i+78];
+				slots[i] = list[i+81];
 			}
 			break;
 
 		case GALACTICRAFT:
-			for(int i = 0; i < 6; i ++){
-				slots[i] = list[i+82];
+			for(int i = 0; i < 10; i ++){
+				slots[i] = list[i+85];
 			}
 			break;
 
 		case MARICULTURE:
 			for(int i = 0; i < 3; i ++){
-				slots[i] = list[i+88];
+				slots[i] = list[i+95];
 			}
 			break;
 
@@ -427,5 +434,15 @@ public class TileEntityGravestone extends TileEntity implements IInventory
 
 		}
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+	}
+
+	private int getListSlotID(int slot){
+		return tab == 0 ? slot :
+			tab == 1 ? slot + 40 :
+				tab == 2 ? slot + 47 :
+					tab == 3 ? slot + 74 : 
+						tab == 4 ? slot + 81 : 
+							tab == 5 ? slot +85 : 
+								tab == 6 ? slot + 95 : 0;
 	}
 }
