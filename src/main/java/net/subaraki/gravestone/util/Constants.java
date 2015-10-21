@@ -1,7 +1,12 @@
 package net.subaraki.gravestone.util;
 
+import java.util.HashMap;
+import java.util.UUID;
+
+import net.minecraft.block.BlockSkull;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.ItemSkull;
 import net.minecraft.item.ItemStack;
 import net.subaraki.gravestone.client.model.ModelAngel;
 import net.subaraki.gravestone.client.model.ModelCubeWorld;
@@ -39,20 +44,13 @@ public class Constants {
 		public static ModelCubeWorld angelStatue;
 		public static ModelCubeWorld barrel;
 		
-		public static final ItemStack ICON_VANILLA = new ItemStack(Items.iron_sword);
-		public static final ItemStack ICON_TCON = new ItemStack(Items.diamond_chestplate);
-		public static final ItemStack ICON_RPGI = new ItemStack(Items.golden_chestplate);
-		public static final ItemStack ICON_BAUBLES = new ItemStack(Items.gold_ingot);
-		public static final ItemStack ICON_GALACTICRAFT = new ItemStack(Blocks.glass);
-		public static final ItemStack ICON_MARICULTURE = new ItemStack(Items.fish);
-		
-		public static final byte VANILLA = 0;
-		public static final byte RPGI = 1;
-		public static final byte TC = 2;
-		public static final byte BAUBEL = 3;
-		public static final byte GALACTICRAFT = 4;
-		public static final byte MARICULTURE = 5;
+		public static final ItemStack ICON_SKULL_0 = new ItemStack(Items.skull, 1, 0);
+		public static final ItemStack ICON_SKULL_1 = new ItemStack(Items.skull, 1, 1);
+		public static final ItemStack ICON_SKULL_2 = new ItemStack(Items.skull, 1, 2);
+		public static final ItemStack ICON_SKULL_3 = new ItemStack(Items.skull, 1, 3);
+		public static final ItemStack ICON_SKULL_4 = new ItemStack(Items.skull, 1, 4);
 		
 		public static final TileEntityGravestone GRAVE_PLACEHOLDER = new TileEntityGravestone();
 		
+		public static HashMap<UUID, ItemStack[]> armorFromPlayer = new HashMap<UUID, ItemStack[]>();
 }

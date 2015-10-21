@@ -16,7 +16,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ContainerGrave extends Container{
 
 	protected TileEntityGravestone te;
-	int slotCount = 0;
+	private int slotCount = 0;
 	private EntityPlayer player;
 
 	public ContainerGrave(InventoryPlayer inv, TileEntityGravestone te, EntityPlayer p)
@@ -24,51 +24,11 @@ public class ContainerGrave extends Container{
 		this.te = te;
 		player = p;
 
-		if(inv.player.capabilities.isCreativeMode){
-			for (int i = 0; i < 4; i++)
-			{
-				for (int k = 0; k < 9; k++)
-				{
-					addSlotToContainer(new Slot(te,slotCount,
-							8 + (k * 18),
-							18 + (i * 18)));
-					slotCount++;
-				}
-			}
-			for (int i = 0; i < 4; i++)
-			{
-				addSlotToContainer(new SlotArmorGrave(te,slotCount,
-						174 ,
-						(18*4) - (i * 18)));
-				slotCount++;
-
-			}
-		}else{
-			for (int i = 0; i < 4; i++)
-			{
-				for (int k = 0; k < 9; k++)
-				{
-					addSlotToContainer(new SlotGrave(te,slotCount,
-							8 + (k * 18),
-							18 + (i * 18)));
-					slotCount++;
-				}
-			}
-			for (int i = 0; i < 4; i++)
-			{
-				addSlotToContainer(new SlotGrave(te,slotCount,
-						174 ,
-						(18*4) - (i * 18)));
-				slotCount++;
-			}
-		}
-
-		fillInv(inv);
+		addSlots(inv);
+		addPlayerInventory(inv);
 	}
 
-
-
-	private void fillInv(InventoryPlayer inv){
+	private void addPlayerInventory(InventoryPlayer inv){
 
 		for (int i = 0; i < 3; i++)
 		{
@@ -128,8 +88,8 @@ public class ContainerGrave extends Container{
 	}
 
 	@Override
-	public ItemStack slotClick(int par1, int par2, int par3,
-			EntityPlayer par4EntityPlayer) {
+	public ItemStack slotClick(int par1, int par2, int par3, EntityPlayer par4EntityPlayer) {
+
 		return super.slotClick(par1, par2, par3, par4EntityPlayer);
 	}
 
@@ -145,33 +105,30 @@ public class ContainerGrave extends Container{
 			stack = slotStack.copy();
 
 			if(slot.inventory instanceof TileEntityGravestone){
-				if(slotID < 36){
+				if(slotID == 39) {
+					if(!this.mergeItemStack(stack, 76, 77, true)) {
+						return null;
+					}
+				}
+				else if(slotID == 29) {
+					if(!this.mergeItemStack(stack, 77, 78, true)) {
+						return null;
+					}
+				}
+				else if(slotID == 19) {
+					if(!this.mergeItemStack(stack, 78, 79, true)) {
+						return null;
+					}
+				}
+				else if(slotID == 9) {
+					if(!this.mergeItemStack(stack, 79, 80, true)) {
+						return null;
+					}
+				}else
 					if(!this.mergeItemStack(stack, 40, 76, true)){
 						return null;
 					}
 
-				}else{
-					if(slotID == 36) {
-						if(!this.mergeItemStack(stack, 76, 77, true)) {
-							return null;
-						}
-					}
-					if(slotID == 37) {
-						if(!this.mergeItemStack(stack, 77, 78, true)) {
-							return null;
-						}
-					}
-					if(slotID == 38) {
-						if(!this.mergeItemStack(stack, 78, 79, true)) {
-							return null;
-						}
-					}
-					if(slotID == 39) {
-						if(!this.mergeItemStack(stack, 79, 80, true)) {
-							return null;
-						}
-					}
-				}
 
 				if(slotStack.stackSize == 1){
 					slot.putStack(null);
@@ -191,4 +148,77 @@ public class ContainerGrave extends Container{
 		return stack;
 	}
 
+	public void addSlots(InventoryPlayer inv){
+
+		if(inv.player.capabilities.isCreativeMode){
+
+			for (int i = 0; i < 4; i++){
+				final int id = i;
+
+				for (int k = 0; k < 10; k++){
+					if((slotCount == (10 * ((slotCount+1)/10)) -1)){ //9,19,29,...
+
+						addSlotToContainer(new SlotArmorGrave(te,slotCount,
+								makeOffset(k, 5),
+								makeOffset(i, 15)){
+							int armor = (10 * ((slotCount+1)/10)) -1;
+							@Override
+							public boolean isItemValid(ItemStack par1ItemStack){
+								if (par1ItemStack == null) {
+									return false;
+								}
+								return par1ItemStack.getItem().isValidArmor(par1ItemStack, armor == 9 ? 0 : armor == 19 ? 1 : armor == 29 ? 2 : 3, player);
+							}
+						});
+
+					}else
+						addSlotToContainer(new Slot(te,slotCount,
+								makeOffset(k, 5),
+								makeOffset(i, 15)));
+
+					slotCount++;
+				}
+			}
+
+		}else{
+
+			for (int i = 0; i < 4; i++){
+				final int id = i;
+
+				for (int k = 0; k < 10; k++){
+
+					if((slotCount == (10 * ((slotCount+1)/10)) -1)){ //9,19,29,...
+						addSlotToContainer(new SlotGrave(te,slotCount,
+								makeOffset(k, 5),
+								makeOffset(i, 15)){
+							int armor = (10 * ((slotCount+1)/10)) -1;
+							@Override
+							public boolean isItemValid(ItemStack par1ItemStack){
+								if (par1ItemStack == null) {
+									return false;
+								}
+								return par1ItemStack.getItem().isValidArmor(par1ItemStack, armor == 9 ? 0 : armor == 19 ? 1 : armor == 29 ? 2 : 3, player);
+							}
+
+							//								@Override
+							//								@SideOnly(Side.CLIENT)
+							//								public IIcon getBackgroundIconIndex(){
+							//									return ItemArmor.func_94602_b(id);
+							//								}
+						});
+
+					}else
+						addSlotToContainer(new SlotGrave(te,slotCount,
+								makeOffset(k, 5),
+								makeOffset(i, 15)));
+
+					slotCount++;
+				}
+			}
+		}
+	}
+
+	private int makeOffset(int variable, int offset){
+		return offset + (variable * 18);
+	}
 }

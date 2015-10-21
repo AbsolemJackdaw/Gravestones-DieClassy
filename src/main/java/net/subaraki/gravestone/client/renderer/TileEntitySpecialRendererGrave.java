@@ -92,29 +92,29 @@ public class TileEntitySpecialRendererGrave extends TileEntitySpecialRenderer {
 			GL11.glRotatef(rot, 0, 1, 0);
 			ModelHandler.modelhead.renderHead(0.0625f);
 
-			if(tile.getStackInSlot(tile.getSizeInventory()-1) != null){
-				if(tile.getStackInSlot(tile.getSizeInventory()-1).getItem() instanceof ItemArmor){
+			if(tile.list[39] != null){
+				if(tile.list[39].getItem() instanceof ItemArmor){
 					GL11.glPushMatrix();
 					float f2 = 1.2f;
 					GL11.glScalef(f2,f2,f2);
 					GL11.glTranslatef(0f, 0.05f, 0f);
 					GL11.glRotatef(rot, 0, 1, 0);
-					ItemStack item = tile.getStackInSlot(tile.getSizeInventory()-1);
+					ItemStack item = tile.list[39];
 					ModelHandler.helper.setArmorModel(ModelHandler.modelarmorhead, item,((ItemArmor)item.getItem()).armorType, RenderBiped.bipedArmorFilenamePrefix[((ItemArmor)item.getItem()).renderIndex]);
 					ModelHandler.modelarmorhead.renderHead(0.0625f);
 					GL11.glPopMatrix();
 				}
 			}
 
-			if(tile.getStackInSlot(tile.getSizeInventory()-2) != null){
-				if(tile.getStackInSlot(tile.getSizeInventory()-2).getItem() instanceof ItemArmor){
+			if(tile.list[38] != null){
+				if(tile.list[38].getItem() instanceof ItemArmor){
 
 					GL11.glPushMatrix();
 					float f2 = 1.1f;
 					GL11.glScalef(f2,f2,f2);
 					GL11.glTranslatef(0f, -0.02f, 0f);
 					GL11.glRotatef(rot, 0, 1, 0);
-					ItemStack item = tile.getStackInSlot(tile.getSizeInventory()-2);
+					ItemStack item = tile.list[38];
 					ModelHandler.helper.setArmorModel(ModelHandler.modelarmorchest, item,((ItemArmor)item.getItem()).armorType, RenderBiped.bipedArmorFilenamePrefix[((ItemArmor)item.getItem()).renderIndex]);
 					ModelHandler.modelarmorchest.renderHead(0.0625f);
 					GL11.glPopMatrix();

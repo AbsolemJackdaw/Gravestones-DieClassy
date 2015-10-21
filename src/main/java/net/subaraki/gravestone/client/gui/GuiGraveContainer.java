@@ -1,9 +1,18 @@
 package net.subaraki.gravestone.client.gui;
 
-import static net.subaraki.gravestone.util.Constants.*;
+import static net.subaraki.gravestone.util.Constants.ICON_SKULL_0;
+import static net.subaraki.gravestone.util.Constants.ICON_SKULL_1;
+import static net.subaraki.gravestone.util.Constants.ICON_SKULL_2;
+import static net.subaraki.gravestone.util.Constants.ICON_SKULL_3;
+import static net.subaraki.gravestone.util.Constants.ICON_SKULL_4;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 import net.subaraki.gravestone.GraveStones;
@@ -13,10 +22,15 @@ import net.subaraki.gravestone.handler.GraveTextHandler;
 import net.subaraki.gravestone.handler.ModelHandler;
 import net.subaraki.gravestone.handler.TextureHandler;
 import net.subaraki.gravestone.inventory.ContainerGrave;
+import net.subaraki.gravestone.inventory.slot.SlotArmorGrave;
+import net.subaraki.gravestone.inventory.slot.SlotGrave;
 import net.subaraki.gravestone.tileentity.TileEntityGravestone;
 import net.subaraki.gravestone.util.GraveUtility;
 
 import org.lwjgl.opengl.GL11;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class GuiGraveContainer extends GuiContainer{
 
@@ -34,6 +48,10 @@ public class GuiGraveContainer extends GuiContainer{
 	private String tabText = "MineCraft";
 
 	private static final ResourceLocation graveGui = new ResourceLocation("grave:textures/entity/tile/grave_chest.png");
+	private static final ResourceLocation boots = new ResourceLocation("minecraft:textures/items/empty_armor_slot_boots.png");
+	private static final ResourceLocation legs = new ResourceLocation("minecraft:textures/items/empty_armor_slot_leggings.png");
+	private static final ResourceLocation chest = new ResourceLocation("minecraft:textures/items/empty_armor_slot_chestplate.png");
+	private static final ResourceLocation helm = new ResourceLocation("minecraft:textures/items/empty_armor_slot_helmet.png");
 
 	private ModelHead modelhead = new ModelHead();
 
@@ -48,8 +66,12 @@ public class GuiGraveContainer extends GuiContainer{
 		nameOfDeathPlayer = grave.playername;
 
 		te = grave;
+		tabText = "Tab " + (te.tab + 1);
 
-		this.xSize = 198;
+		updateLayout(te.tab);
+		updateInventory(te.tab);
+		
+		this.xSize = 197;
 		this.ySize = 186;
 
 		if(grave != null) {
@@ -70,6 +92,7 @@ public class GuiGraveContainer extends GuiContainer{
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2){
 		fontRendererObj.drawString(StatCollector.translateToLocal("grave.container.name"), 8, (ySize - 96) + 2, 0xffffff);
+
 	}
 
 	@Override
@@ -80,6 +103,30 @@ public class GuiGraveContainer extends GuiContainer{
 
 		mc.renderEngine.bindTexture(graveGui);
 		drawTexturedModalRect(posX, posY, 0, 0, xSize, ySize);
+
+		if(te.tab == 0){
+			for(int offset = 0; offset <9; offset++)
+				drawTexturedModalRect(posX+7 + offset*18, posY+14, 200, 0, 18, 72);
+			//			
+			drawTexturedModalRect(posX+173, posY+14, 200, 0, 18, 72);
+				
+			for(int id = 0; id < 4; id++){
+				 IIcon iicon = ItemArmor.func_94602_b(i);
+		            if (iicon != null)
+		            {
+		                GL11.glDisable(GL11.GL_LIGHTING);
+		                GL11.glEnable(GL11.GL_BLEND); // Forge: Blending needs to be enabled for this.
+		                this.mc.getTextureManager().bindTexture(TextureMap.locationItemsTexture);
+		                this.drawTexturedModelRectFromIcon(posX, posY, iicon, 16, 16);
+		                GL11.glDisable(GL11.GL_BLEND); // Forge: And clean that up
+		                GL11.glEnable(GL11.GL_LIGHTING);
+		            }
+			}
+
+		}else{
+			for(int offset = 0; offset <10; offset++)
+				drawTexturedModalRect(posX+9 + offset*18, posY+14, 200, 0, 18, 72);
+		}
 
 		fontRendererObj.drawSplitString(gravetext, (this.width / 2)+109, (this.height / 2)-89, 100 ,0x000000);
 		fontRendererObj.drawSplitString(gravetext, (this.width / 2)+110, (this.height / 2)-90, 100 ,0xffffff);
@@ -175,28 +222,11 @@ public class GuiGraveContainer extends GuiContainer{
 		int x = ((this.width/2) - (xSize/2)) + 4;
 		int y = ((this.height/2) - (ySize/2)) - 19;
 
-		buttonList.add(new GuiTabButton(0, x     , y, 35 , 20, "", te.tab == 0, ICON_VANILLA, fontRendererObj));
 		offsetX += offsetSize;
-		if(GraveStones.hasRpgI){
-			buttonList.add(new GuiTabButton(1, x + offsetX , y, 35 , 20, "", te.tab == 1, ICON_RPGI, fontRendererObj));
-			offsetX += offsetSize;
-		}
-		if(GraveStones.hasTiCo){
-			buttonList.add(new GuiTabButton(2, x + offsetX , y, 35 , 20, "", te.tab == 2, ICON_TCON,fontRendererObj));
-			offsetX += offsetSize;
-		}
 
-		if(GraveStones.hasBaub){
-			buttonList.add(new GuiTabButton(3, x + offsetX , y, 35 , 20, "", te.tab == 3, ICON_BAUBLES,fontRendererObj));
+		for(int i = 0 ; i < 5 ;  i ++){
+			buttonList.add(new GuiTabButton(i, x - 33 + offsetX , y, 35 , 20, "", te.tab == i, getIconForTab(i), fontRendererObj));
 			offsetX += offsetSize;
-		}
-		if(GraveStones.hasGal_Craft){
-			buttonList.add(new GuiTabButton(4, x + offsetX , y, 35 , 20, "", te.tab == 4, ICON_GALACTICRAFT,fontRendererObj));
-			offsetX +=offsetSize;
-		}
-		if(GraveStones.hasMari_Cul){
-			buttonList.add(new GuiTabButton(5, x + offsetX , y, 35 , 20, "", te.tab == 5, ICON_MARICULTURE,fontRendererObj));
-			offsetX +=offsetX;
 		}
 	}
 
@@ -204,54 +234,75 @@ public class GuiGraveContainer extends GuiContainer{
 	protected void actionPerformed(GuiButton button) {
 		super.actionPerformed(button);
 
-		updateInventory((byte)button.id);
+		updateLayout(button.id);
 
-		if(button.id == 0)
-			tabText = "MineCraft";
+		updateInventory(button.id);
 
-		if(button.id == 1)
-			tabText = "Rpg Inventory";
-
-		if(button.id == 2)
-			tabText = "Tinkers Construct";
-
-		if(button.id == 3)
-			tabText = "Baubel Inventory";
-
-		if(button.id == 4)
-			tabText = "Galacticraft";
-
-		if(button.id == 5)
-			tabText = "Mariculture";
+		tabText = "Tab " + (button.id + 1);
 
 		initGui();
 	}
 
-	private void updateInventory(byte i){
+	private void updateInventory(int i){
 
 		GraveStones.instance.network.sendToServer(new PacketSwitchSlotLayout(te.xCoord, te.yCoord, te.zCoord, i));
 
-		switch(i){
-		case 0:
-			te.changeSlotLayout(VANILLA);
-			break;
-		case 1:
-			te.changeSlotLayout(RPGI);
-			break;
-		case 2:
-			te.changeSlotLayout(TC);
-			break;
-		case 3:
-			te.changeSlotLayout(BAUBEL);
-			break;
-		case 4:
-			te.changeSlotLayout(GALACTICRAFT);
-			break;
-		case 5:
-			te.changeSlotLayout(MARICULTURE);
-			break;
-		}
+		te.updateSlotContents(i);
 
 		te.tab = i;
+	}
+
+	private ItemStack getIconForTab(int b){
+		switch (b) {
+		case 0:
+			return ICON_SKULL_0;
+		case 1 :
+			return ICON_SKULL_1;
+		case 2 :
+			return ICON_SKULL_2;
+		case 3 : 
+			return ICON_SKULL_3;
+		case 4 : 
+			return ICON_SKULL_4;
+		default : 
+			return ICON_SKULL_0;
+		}
+	}
+
+	private void updateLayout(int buttonID){
+
+		if(buttonID == 0){
+			for(int i = 0; i < inventorySlots.inventorySlots.size(); i++){
+				Slot slot = (Slot)((ContainerGrave)inventorySlots).inventorySlots.get(i);
+				if(slot.inventory instanceof TileEntityGravestone){
+
+					int slotIndex = i;
+					if((i == (10 * ((slotIndex+1)/10)) -1))
+						slot.xDisplayPosition = 12 + ((slotIndex - ((slotIndex/10)*10)) * 18);
+					else
+						slot.xDisplayPosition = 8 + ((slotIndex - ((slotIndex/10)*10)) * 18);
+					slotIndex++;
+				}
+
+			}
+		}else{
+			for(int i = 0; i < inventorySlots.inventorySlots.size(); i++){
+				Slot slot = (Slot)((ContainerGrave)inventorySlots).inventorySlots.get(i);
+				if(slot.inventory instanceof TileEntityGravestone){
+					int slotIndex = i;
+
+					if((i == (10 * ((slotIndex+1)/10)) -1))
+						slot.xDisplayPosition = 10 + ((slotIndex - ((slotIndex/10)*10)) * 18);
+					else
+						slot.xDisplayPosition = 10 + ((slotIndex - ((slotIndex/10)*10)) * 18);
+
+					slotIndex++;
+				}
+			}
+		}
+	}
+
+	private Slot changeSlot(int id, int x, int y, final int armorIdentifier, boolean creative, boolean armor){
+		return null;
 	}
 }

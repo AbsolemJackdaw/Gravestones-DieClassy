@@ -30,7 +30,7 @@ public class SlotGrave extends Slot {
 			if(!te.otherPlayerHasTakenItemStack)
 			{
 				te.otherPlayerHasTakenItemStack = true;
-				te.locked = "You loot "+ te.getStackInSlot(this.getSlotIndex()).getDisplayName() + " from "+te.playername+"'s grave.";
+				te.locked = "You loot "+ te.list[this.getSlotIndex()].getDisplayName() + " from "+te.playername+"'s grave.";
 				return true;
 			}else{
 				te.locked = "You admire the items from "+ te.playername+"'s grave...";

@@ -1,12 +1,5 @@
 package net.subaraki.gravestone.tileentity;
 
-import static net.subaraki.gravestone.util.Constants.BAUBEL;
-import static net.subaraki.gravestone.util.Constants.GALACTICRAFT;
-import static net.subaraki.gravestone.util.Constants.MARICULTURE;
-import static net.subaraki.gravestone.util.Constants.RPGI;
-import static net.subaraki.gravestone.util.Constants.TC;
-import static net.subaraki.gravestone.util.Constants.VANILLA;
-
 import java.util.Random;
 
 import net.minecraft.entity.Entity;
@@ -29,20 +22,10 @@ public class TileEntityGravestone extends TileEntity implements IInventory
 {
 
 	/**all saved itemstacks
-	 *
-	 * 0 -39  are vanilla (40 slots)
-	 * 40-46 is rpg invententory (7 slots)
-	 * 47-73 is tconstruct knapsack (27 slots)
-	 * 74-80 is tconstruct armor (7 slots)
-	 * 
-	 * 81 84 is baubel items (4 slots)
-	 * 
-	 * 85-94 is galacticraft (10 slots)
-	 * 
-	 * 95-97s is mariculture (3 slots)
+	 * 40 items per tab
 	 */
 
-	public ItemStack[] list = new ItemStack[128];
+	public ItemStack[] list = new ItemStack[256];
 
 	/**slots in the container shown*/
 	public ItemStack[] slots = new ItemStack[40];
@@ -101,12 +84,13 @@ public class TileEntityGravestone extends TileEntity implements IInventory
 			GraveStones.printDebugMessage("Tried getting content of tab #" + tab + " this should be the " + this.modNameForTab(tab) + " inventory");
 		}
 
-		this.slots[slot] = par2ItemStack;
 		this.list[slotID] = par2ItemStack;
 
 		if ((par2ItemStack != null) && (par2ItemStack.stackSize > this.getInventoryStackLimit())) {
 			par2ItemStack.stackSize = this.getInventoryStackLimit();
 		}
+		
+		updateSlotContents(tab);
 	}
 
 	@Override
@@ -118,8 +102,6 @@ public class TileEntityGravestone extends TileEntity implements IInventory
 			GraveStones.printDebugMessage("Tab id was not recognized ! This is a bug or inimplemented feature. please report to mod author !");
 			GraveStones.printDebugMessage("Tried getting content of tab #" + tab + " this should be the " + this.modNameForTab(tab) + " inventory");
 		}
-
-		GraveStones.printDebugMessage("");
 
 		if (this.slots[slot] != null)
 		{
@@ -150,23 +132,12 @@ public class TileEntityGravestone extends TileEntity implements IInventory
 	}
 
 	@Override
-	public ItemStack getStackInSlotOnClosing(int par1)
-	{
-		//		if (this.slots[par1] != null)
-		//		{
-		//			ItemStack itemstack = this.slots[par1];
-		//			this.slots[par1] = null;
-		//			return itemstack;
-		//		}
-		//		else
-		//		{
+	public ItemStack getStackInSlotOnClosing(int par1){
 		return null;
-		//		}
 	}
 
 	@Override
-	public int getInventoryStackLimit()
-	{
+	public int getInventoryStackLimit(){
 		return 64;
 	}
 
@@ -177,8 +148,7 @@ public class TileEntityGravestone extends TileEntity implements IInventory
 			par1EntityPlayer.getDistanceSq(this.xCoord + 0.5D, this.yCoord + 0.5D, this.zCoord + 0.5D) <= 64.0D;
 	}
 
-	public String getInvName()
-	{
+	public String getInvName(){
 		return "Grave";
 	}
 
@@ -273,7 +243,7 @@ public class TileEntityGravestone extends TileEntity implements IInventory
 
 		if (this != null) {
 			for (int slotIndex = 0; slotIndex < this.list.length; slotIndex++) {
-				ItemStack items = this.getStackInSlot(slotIndex);
+				ItemStack items = list[slotIndex];
 
 				if (items != null) {
 					float var10 = (rand.nextFloat() * 0.8F) + 0.1F;
@@ -385,95 +355,22 @@ public class TileEntityGravestone extends TileEntity implements IInventory
 	}
 
 
-	public void changeSlotLayout(byte b){
+	public void updateSlotContents(int b){
 
-		for(int i = 0; i < slots.length; i ++){
+		for(int i = 0; i < slots.length; i ++)
 			slots[i] = null;
-		}
 
-		switch(b){
+		for(int i = 0; i < slots.length; i ++)
+			slots[i] = list[i + (b * 40)];
 
-		case VANILLA:
-
-			for(int i = 0; i < slots.length; i ++){
-				slots[i] = list[i];
-			}
-
-			break;
-
-		case RPGI:
-			for(int i = 0; i < 7; i ++){
-				slots[i] = list[i+40];
-			}
-
-			break;
-
-		case TC:
-			for(int i = 0; i < 27; i ++){
-				slots[i] = list[i+47];
-			}
-			for(int i = 0; i < 7; i ++){
-				slots[i+27] = list[i+74];
-			}
-			break;
-
-		case BAUBEL:
-			for(int i = 0; i < 4; i ++){
-				slots[i] = list[i+81];
-			}
-			break;
-
-		case GALACTICRAFT:
-			for(int i = 0; i < 10; i ++){
-				slots[i] = list[i+85];
-			}
-			break;
-
-		case MARICULTURE:
-			for(int i = 0; i < 3; i ++){
-				slots[i] = list[i+95];
-			}
-			break;
-
-		default:
-			break;
-
-		}
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	}
 
 	private int getListSlotID(int slot){
-		
-		return tab == 0 ? slot :
-			tab == 1 ? slot + 40 :
-				tab == 2 ? slot + 47 :
-					tab == 3 ? slot + 81 : 
-						tab == 4 ? slot +85 : 
-							tab == 5 ? slot + 95 : -1;
+		return slot + (40*tab);
 	}
-	
+
 	private String modNameForTab(int tabId){
-		
-		String name = null;
-		
-		if(tabId == 0)
-			name = "MineCraft";
-
-		if(tabId == 1)
-			name = "Rpg Inventory";
-
-		if(tabId == 2)
-			name = "Tinkers Construct";
-
-		if(tabId == 3)
-			name = "Baubel Inventory";
-
-		if(tabId == 4)
-			name = "Galacticraft";
-
-		if(tabId == 5)
-			name = "Mariculture";
-		
-		return name;
+		return "Tab " + (tabId + 1);
 	}
 }

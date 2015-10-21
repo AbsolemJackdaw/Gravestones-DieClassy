@@ -19,7 +19,7 @@ public class PacketSwitchSlotLayout implements IMessage{
 	/**
 	 * The grave inventory layout determined by this enum
 	 */
-	public byte graveSlotType;
+	public int graveSlotType;
 
 	/**Placeholder. Do not use to send the packet !*/
 	public PacketSwitchSlotLayout() {
@@ -30,7 +30,7 @@ public class PacketSwitchSlotLayout implements IMessage{
 	 *@param x,y,z : Location of the tile entity that needs to be accessed.  
 	 *@param eg : The grave inventory layout determined by this enum
 	 */
-	public PacketSwitchSlotLayout(int x, int y, int z, byte slotType) {
+	public PacketSwitchSlotLayout(int x, int y, int z, int slotType) {
 
 		this.x = x;
 		this.y = y;
@@ -45,7 +45,7 @@ public class PacketSwitchSlotLayout implements IMessage{
 		y = buf.readInt();
 		z = buf.readInt();
 
-		graveSlotType = buf.readByte();
+		graveSlotType = buf.readInt();
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class PacketSwitchSlotLayout implements IMessage{
 		buf.writeInt(x);
 		buf.writeInt(y);
 		buf.writeInt(z);
-		buf.writeByte(graveSlotType);
+		buf.writeInt(graveSlotType);
 	}
 
 
@@ -68,7 +68,7 @@ public class PacketSwitchSlotLayout implements IMessage{
 			if(tile != null && tile instanceof TileEntityGravestone){
 
 				TileEntityGravestone grave = (TileEntityGravestone)tile;
-				grave.changeSlotLayout(message.graveSlotType);
+				grave.updateSlotContents(message.graveSlotType);
 				grave.tab = message.graveSlotType;
 			}else
 				GraveStones.printDebugMessage("Tile Entity did not exist ! Could not acces inventory" );

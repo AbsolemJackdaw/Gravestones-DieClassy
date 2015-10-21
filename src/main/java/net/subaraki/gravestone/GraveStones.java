@@ -19,6 +19,7 @@ import net.subaraki.gravestone.common.network.PacketSyncModelToClient.PacketSync
 import net.subaraki.gravestone.handler.ConfigHandler;
 import net.subaraki.gravestone.handler.GravestoneEventHandler;
 import net.subaraki.gravestone.handler.GuiHandler;
+import net.subaraki.gravestone.handler.PlayerDeathHandler;
 import net.subaraki.gravestone.handler.RecipeHandler;
 import net.subaraki.gravestone.item.ItemDecoGrave;
 import net.subaraki.gravestone.tileentity.TileEntityGravestone;
@@ -27,7 +28,6 @@ import net.subaraki.gravestone.util.GraveUtility;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -51,12 +51,6 @@ public class GraveStones {
 
 	public static Block graveStone;
 
-	public static boolean hasTiCo = false;
-	public static boolean hasRpgI = false;
-	public static boolean hasBaub = false;
-	public static boolean hasGal_Craft = false;
-	public static boolean hasMari_Cul = false;
-
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 
@@ -79,19 +73,9 @@ public class GraveStones {
 		RecipeHandler.registerBlockRecipe();
 
 		new GravestoneEventHandler();
-
+		new PlayerDeathHandler();
+		
 		proxy.preInit();
-	}
-
-	@EventHandler
-	public void init(FMLInitializationEvent event){
-
-		hasRpgI = GraveUtility.findClass("rpgInventory.RpgInventoryMod", "Rpg Inventory");
-		hasTiCo = GraveUtility.findClass("tconstruct.TConstruct", "Tinkers Construct");
-		hasBaub = GraveUtility.findClass("baubles.common.Baubles", "Baubel Inventory");
-		hasGal_Craft = GraveUtility.findClass("micdoodle8.mods.galacticraft.core.GalacticraftCore", "GalacticCraft");
-		hasMari_Cul = GraveUtility.findClass("mariculture.Mariculture" , "Mariculture");
-
 	}
 
 	/**

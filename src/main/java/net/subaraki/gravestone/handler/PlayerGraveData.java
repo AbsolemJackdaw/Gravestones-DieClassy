@@ -52,10 +52,10 @@ public class PlayerGraveData implements IExtendedEntityProperties {
 	public void loadNBTData(NBTTagCompound compound) {
 		graveID = compound.getInteger("grave_ID");
 		
-		if(this.player != null && player.worldObj.isRemote)
-			GraveStones.printDebugMessage("C load " + graveID + " ");
-		if(this.player != null && !player.worldObj.isRemote)
-			GraveStones.printDebugMessage("S load " + graveID + " ");
+//		if(this.player != null && player.worldObj.isRemote)
+//			GraveStones.printDebugMessage("C load " + graveID + " ");
+//		if(this.player != null && !player.worldObj.isRemote)
+//			GraveStones.printDebugMessage("S load " + graveID + " ");
 		
 	}
 
